@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.it.dao.ClassesCourseMapper" >
+  <resultMap id="BaseResultMap" type="cn.it.entity.ClassesCourse" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="classes_id" property="classesId" jdbcType="INTEGER" />
+    <result column="teacher_id" property="teacherId" jdbcType="INTEGER" />
+    <result column="course_id" property="courseId" jdbcType="INTEGER" />
+    <result column="major_id" property="majorId" jdbcType="INTEGER" />
+    <result column="hours" property="hours" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <resultMap id="BaseResultMapForList" type="cn.it.entity.ClassesCourse" extends="BaseResultMap">
+    <result column="total" property="total" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, classes_id, teacher_id, course_id, major_id, hours
+  </sql>
+  
+  <sql id="Base_Column_List_For_list" >
+    id, classes_id, teacher_id, course_id, major_id, hours,total
+  </sql>
+  
+  <select id="select" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_classes_course
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectClassesCourse" resultMap="BaseResultMap" parameterType="classesCourse" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_classes_course
+    where classes_id = #{classesId,jdbcType=INTEGER} and teacher_id = #{teacherId,jdbcType=INTEGER} and course_id = #{courseId,jdbcType=INTEGER}
+    and major_id = #{majorId,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectClassesCourseByCourseId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_classes_course
+    where course_id = #{courseId,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectList" resultMap="BaseResultMap" parameterType="classesCourse" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_classes_course
+    <where>
+		<if test="teacherId!=null">
+			and teacher_id=#{teacherId}
+		</if>
+		<if test="classesId!=null">
+			and classes_id like #{classesId}
+		</if>
+		<if test="courseId!=null">
+			and course_id like #{courseId}
+		</if>
+		<if test="majorId!=null">
+			and major_id like #{majorId}
+		</if>
+	</where>
+  </select>
+  
+  <select id="selectListPage" resultMap="BaseResultMapForList" parameterType="classesCourse" >
+    select 
+    <include refid="Base_Column_List_For_list" />
+     from (select s.*,(select count(1) from t_classes_course)total from t_classes_course s)t
+    <where>
+		<if test="teacherId!=null">
+			and t.teacher_id=#{teacherId}
+		</if>
+		<if test="classesId!=null">
+			and t.classes_id like #{classesId}
+		</if>
+		<if test="courseId!=null">
+			and t.course_id like #{courseId}
+		</if>
+		<if test="majorId!=null">
+			and t.major_id like #{majorId}
+		</if>
+		 and t.id limit #{pagedIndex,jdbcType=INTEGER},#{pagedSize,jdbcType=INTEGER}
+	</where>
+  </select>
+  
+  <delete id="deleteList" >
+  	delete from t_classes_course where id in
+  		<foreach collection="array" close=")" open="(" item="id" separator=",">
+  		 #{id}
+  		</foreach>
+  </delete>
+  
+  <delete id="delete" parameterType="java.lang.Integer" >
+    delete from t_classes_course
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insert" parameterType="cn.it.entity.ClassesCourse" >
+    insert into t_classes_course (id, classes_id, teacher_id, 
+      course_id, major_id, hours
+      )
+    values (#{id,jdbcType=INTEGER}, #{classesId,jdbcType=INTEGER}, #{teacherId,jdbcType=INTEGER}, 
+      #{courseId,jdbcType=INTEGER}, #{majorId,jdbcType=INTEGER}, #{hours,jdbcType=INTEGER}
+      )
+  </insert>
+  
+  <update id="update" parameterType="cn.it.entity.ClassesCourse" >
+    update t_classes_course
+    set classes_id = #{classesId,jdbcType=INTEGER},
+      teacher_id = #{teacherId,jdbcType=INTEGER},
+      course_id = #{courseId,jdbcType=INTEGER},
+      major_id = #{majorId,jdbcType=INTEGER},
+      hours = #{hours,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

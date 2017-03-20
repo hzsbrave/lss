@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.it.dao.ClassesMapper" >
+  <resultMap id="BaseResultMap" type="cn.it.entity.Classes" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="class_name" property="className" jdbcType="VARCHAR" />
+    <result column="grade" property="grade" jdbcType="VARCHAR" />
+    <result column="major_id" property="majorId" jdbcType="INTEGER" />
+    <result column="stu_count" property="stuCount" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <resultMap id="BaseResultMapForList" type="cn.it.entity.Classes" extends="BaseResultMap">
+    <result column="total" property="total" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, class_name, grade, major_id,stu_count
+  </sql>
+  
+  <sql id="Base_Column_List_For_List" >
+    id, class_name, grade, major_id,stu_count,total
+  </sql>
+ 
+  <select id="select" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_classes
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectClasses" resultMap="BaseResultMap" parameterType="classes" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_classes
+    where major_id = #{majorId,jdbcType=INTEGER} and class_name = #{className,jdbcType=VARCHAR} and grade = #{grade,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectListPage" resultMap="BaseResultMapForList" parameterType="classes" >
+   select 
+    <include refid="Base_Column_List_For_List" />
+    from (select s.*,(select count(1) from t_classes)total from t_classes s)t
+    where t.id limit #{pagedIndex,jdbcType=INTEGER},#{pagedSize,jdbcType=INTEGER};
+  </select>
+  
+  <select id="selectList" resultMap="BaseResultMap" parameterType="classes" >
+   select 
+    <include refid="Base_Column_List" />
+    from t_classes
+  </select>
+  
+  <select id="selectListByMajorId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_classes where major_id = #{majorId,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteList" >
+  	delete from t_classes where id in
+  		<foreach collection="array" close=")" open="(" item="id" separator=",">
+  		 #{id}
+  		</foreach>
+  </delete>
+  
+  <delete id="delete" parameterType="java.lang.Integer" >
+    delete from t_classes
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+ 
+  <insert id="insert" parameterType="cn.it.entity.Classes" >
+    insert into t_classes (id, class_name, grade, 
+      major_id,stu_count)
+    values (#{id,jdbcType=INTEGER}, #{className,jdbcType=VARCHAR}, #{grade,jdbcType=VARCHAR}, 
+      #{majorId,jdbcType=INTEGER},#{stuCount,jdbcType=INTEGER})
+  </insert>
+  
+  <update id="update" parameterType="cn.it.entity.Classes" >
+    update t_classes
+    set class_name = #{className,jdbcType=VARCHAR},
+      grade = #{grade,jdbcType=VARCHAR},
+      major_id = #{majorId,jdbcType=INTEGER},
+      stu_count = #{stuCount,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

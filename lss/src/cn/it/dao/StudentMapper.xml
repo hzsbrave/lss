@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.it.dao.StudentMapper">
+	<resultMap id="BaseResultMap" type="cn.it.entity.Student">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="student_name" property="studentName" jdbcType="VARCHAR" />
+		<result column="student_no" property="studentNo" jdbcType="VARCHAR" />
+		<result column="gender" property="gender" jdbcType="INTEGER" />
+		<result column="natives" property="natives" jdbcType="VARCHAR" />
+		<result column="birthday" property="birthday" jdbcType="TIMESTAMP" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="enter_date" property="enterDate" jdbcType="TIMESTAMP" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="QQ" property="qq" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="national" property="national" jdbcType="VARCHAR" />
+		<result column="Political" property="political" jdbcType="VARCHAR" />
+		<result column="idCard" property="idcard" jdbcType="VARCHAR" />
+		<result column="family_phone" property="familyPhone" jdbcType="VARCHAR" />
+		<result column="middle_school" property="middleSchool"
+			jdbcType="VARCHAR" />
+		<result column="grade" property="grade" jdbcType="VARCHAR" />
+		<result column="class_id" property="classId" jdbcType="INTEGER" />
+		<result column="examinee" property="examinee" jdbcType="VARCHAR" />
+		<result column="password" property="password" jdbcType="VARCHAR" />
+		<result column="token" property="token" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="BaseResultMapForList" type="cn.it.entity.Student"
+		extends="BaseResultMap">
+		<result column="total" property="total" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, user_id, student_name, student_no, gender, natives,
+		birthday,
+		address, enter_date,
+		phone, QQ, email, national, Political,
+		idCard, family_phone, middle_school,
+		grade,
+		class_id, examinee, password ,token
+	</sql>
+
+	<sql id="Base_Column_List_For_List">
+		id, user_id, student_name, student_no, gender, natives,
+		birthday,
+		address, enter_date,
+		phone, QQ, email, national, Political,
+		idCard, family_phone, middle_school,
+		grade,
+		class_id, examinee, password ,token
+		,total
+	</sql>
+
+	<select id="select" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_student
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="selectStudentByNo" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_student
+		where student_no = #{studentNo}
+	</select>
+
+	<select id="selectStudent" resultMap="BaseResultMap"
+		parameterType="student">
+		select
+		<include refid="Base_Column_List" />
+		from t_student
+		where student_no = #{studentNo} and password =
+		#{password}
+	</select>
+
+	<select id="selectListPage" resultMap="BaseResultMapForList"
+		parameterType="student">
+		SELECT
+		<include refid="Base_Column_List_For_List" />
+		FROM
+		(
+		SELECT
+		s.*, (
+		SELECT
+		count(1)
+		FROM
+		t_student s,
+		t_classes tc,
+		t_academy ta,
+		t_major tm
+		WHERE s.class_id = tc.id
+		AND tc.major_id = tm.id
+		AND tm.academy_id = ta.id
+		<if test="academyId != null">
+			AND ta.id = #{academyId,jdbcType=INTEGER}
+		</if>
+		<if test="majorId != null">
+			AND tm.id = #{majorId,jdbcType=INTEGER}
+		</if>
+		<if test="classesId != null">
+			AND tc.id = #{classesId,jdbcType=INTEGER}
+		</if>
+		<if test="key != null">
+			AND (
+			s.student_no LIKE CONCAT(CONCAT('%', #{key}), '%')
+			OR ta.academy_name LIKE CONCAT(CONCAT('%', #{key}), '%')
+			OR tm.major_name LIKE CONCAT(CONCAT('%', #{key}), '%')
+			OR s.student_name LIKE CONCAT(CONCAT('%', #{key}), '%')
+			OR tc.class_name LIKE CONCAT(CONCAT('%', #{key}), '%')
+			)
+		</if>
+		) total
+		FROM
+		t_student s,
+		t_classes tc,
+		t_academy ta,
+		t_major tm
+		<where>
+			s.class_id = tc.id
+			AND tc.major_id = tm.id
+			AND tm.academy_id = ta.id
+			<if test="academyId != null">
+				AND ta.id = #{academyId,jdbcType=INTEGER}
+			</if>
+			<if test="majorId != null">
+				AND tm.id = #{majorId,jdbcType=INTEGER}
+			</if>
+			<if test="classesId != null">
+				AND tc.id = #{classesId,jdbcType=INTEGER}
+			</if>
+			<if test="key != null">
+				AND (
+				s.student_no LIKE CONCAT(CONCAT('%', #{key}), '%')
+				OR ta.academy_name LIKE CONCAT(CONCAT('%', #{key}), '%')
+				OR tm.major_name LIKE CONCAT(CONCAT('%', #{key}), '%')
+				OR s.student_name LIKE CONCAT(CONCAT('%', #{key}), '%')
+				OR tc.class_name LIKE CONCAT(CONCAT('%', #{key}), '%')
+				)
+			</if>
+		</where>
+		) t
+		WHERE
+		t.id limit #{pagedIndex,jdbcType=INTEGER},#{pagedSize,jdbcType=INTEGER};
+
+
+	</select>
+
+	<select id="selectList" resultMap="BaseResultMap" parameterType="student">
+		select
+		<include refid="Base_Column_List" />
+		from t_student
+	</select>
+
+	<select id="selectEvaluate" resultType="cn.it.entity.vo.EvaluateVO"
+		parameterType="java.lang.Integer">
+		SELECT
+		a.classCourseId,a.courseName,a.teacherName,te.evaluate_score
+		evaluateScore,te.evaluate_text evaluateText
+		FROM
+		(
+		SELECT
+		tcc.id
+		classCourseId,
+		tc.course_name courseName,
+		tt.teacher_name teacherName,
+		tcc.id tccid,
+		ts.student_no tsstuno
+		FROM
+		t_classes_course tcc,
+		t_student
+		ts,
+		t_course tc,
+		t_teacher tt
+		WHERE
+		ts.class_id = tcc.classes_id
+		AND tc.id
+		= tcc.course_id
+		AND tt.id = tcc.teacher_id
+		AND ts.id =
+		#{id,jdbcType=INTEGER}
+		) a
+		LEFT JOIN t_evaluate te ON a.tccid =
+		te.class_course_id
+		AND a.tsstuno = te.student_id
+	</select>
+
+	<select id="selectEvaluateBySidAndCid" resultType="cn.it.entity.Evaluate"
+		parameterType="cn.it.entity.Evaluate">
+		SELECT
+		*
+		FROM
+		t_evaluate te
+		WHERE
+		te.student_id =
+		#{studentId,jdbcType=VARCHAR}
+		and
+		te.class_course_id =
+		#{classCourseId,jdbcType=INTEGER}
+	</select>
+
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from t_student
+		where id
+		= #{id,jdbcType=INTEGER}
+	</delete>
+
+	<delete id="deleteList">
+		delete from t_student where id in
+		<foreach collection="array" close=")" open="(" item="id"
+			separator=",">
+			#{id}
+		</foreach>
+	</delete>
+
+	<insert id="insert" parameterType="cn.it.entity.Student">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+          SELECT LAST_INSERT_ID()
+     	</selectKey>
+		insert into t_student (id,
+		user_id, student_name,
+		student_no, gender, natives,
+		birthday, address,
+		enter_date,
+		phone, QQ, email, national,
+		Political, idCard, family_phone,
+		middle_school, grade, class_id,
+		examinee, password ,token)
+		values
+		(#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER},
+		#{studentName,jdbcType=VARCHAR},
+		#{studentNo,jdbcType=VARCHAR},
+		#{gender,jdbcType=INTEGER}, #{natives,jdbcType=VARCHAR},
+		#{birthday,jdbcType=TIMESTAMP}, #{address,jdbcType=VARCHAR},
+		#{enterDate,jdbcType=TIMESTAMP},
+		#{phone,jdbcType=VARCHAR},
+		#{qq,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
+		#{national,jdbcType=VARCHAR},
+		#{political,jdbcType=VARCHAR},
+		#{idcard,jdbcType=VARCHAR}, #{familyPhone,jdbcType=VARCHAR},
+		#{middleSchool,jdbcType=VARCHAR}, #{grade,jdbcType=VARCHAR},
+		#{classId,jdbcType=INTEGER},
+		#{examinee,jdbcType=VARCHAR},
+		#{password,jdbcType=VARCHAR},
+		#{token,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertExam" parameterType="cn.it.entity.Student">
+		insert into t_student
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="studentName != null">
+				student_name,
+			</if>
+			<if test="studentNo != null">
+				student_no,
+			</if>
+			<if test="gender != null">
+				gender,
+			</if>
+			<if test="natives != null">
+				natives,
+			</if>
+			<if test="birthday != null">
+				birthday,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="enterDate != null">
+				enter_date,
+			</if>
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="qq != null">
+				QQ,
+			</if>
+			<if test="email != null">
+				email,
+			</if>
+			<if test="national != null">
+				national,
+			</if>
+			<if test="political != null">
+				Political,
+			</if>
+			<if test="idcard != null">
+				idCard,
+			</if>
+			<if test="familyPhone != null">
+				family_phone,
+			</if>
+			<if test="middleSchool != null">
+				middle_school,
+			</if>
+			<if test="grade != null">
+				grade,
+			</if>
+			<if test="classId != null">
+				class_id,
+			</if>
+			<if test="examinee != null">
+				examinee,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=INTEGER},
+			</if>
+			<if test="studentName != null">
+				#{studentName,jdbcType=VARCHAR},
+			</if>
+			<if test="studentNo != null">
+				#{studentNo,jdbcType=VARCHAR},
+			</if>
+			<if test="gender != null">
+				#{gender,jdbcType=INTEGER},
+			</if>
+			<if test="natives != null">
+				#{natives,jdbcType=VARCHAR},
+			</if>
+			<if test="birthday != null">
+				#{birthday,jdbcType=TIMESTAMP},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="enterDate != null">
+				#{enterDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="qq != null">
+				#{qq,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="national != null">
+				#{national,jdbcType=VARCHAR},
+			</if>
+			<if test="political != null">
+				#{political,jdbcType=VARCHAR},
+			</if>
+			<if test="idcard != null">
+				#{idcard,jdbcType=VARCHAR},
+			</if>
+			<if test="familyPhone != null">
+				#{familyPhone,jdbcType=VARCHAR},
+			</if>
+			<if test="middleSchool != null">
+				#{middleSchool,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null">
+				#{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="classId != null">
+				#{classId,jdbcType=INTEGER},
+			</if>
+			<if test="examinee != null">
+				#{examinee,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+
+	<update id="updateExam" parameterType="cn.it.entity.Student">
+		update t_student
+		<set>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=INTEGER},
+			</if>
+			<if test="studentName != null">
+				student_name = #{studentName,jdbcType=VARCHAR},
+			</if>
+			<if test="studentNo != null">
+				student_no = #{studentNo,jdbcType=VARCHAR},
+			</if>
+			<if test="gender != null">
+				gender = #{gender,jdbcType=INTEGER},
+			</if>
+			<if test="natives != null">
+				natives = #{natives,jdbcType=VARCHAR},
+			</if>
+			<if test="birthday != null">
+				birthday = #{birthday,jdbcType=TIMESTAMP},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="enterDate != null">
+				enter_date = #{enterDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="qq != null">
+				QQ = #{qq,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				email = #{email,jdbcType=VARCHAR},
+			</if>
+			<if test="national != null">
+				national = #{national,jdbcType=VARCHAR},
+			</if>
+			<if test="political != null">
+				Political = #{political,jdbcType=VARCHAR},
+			</if>
+			<if test="idcard != null">
+				idCard = #{idcard,jdbcType=VARCHAR},
+			</if>
+			<if test="familyPhone != null">
+				family_phone = #{familyPhone,jdbcType=VARCHAR},
+			</if>
+			<if test="middleSchool != null">
+				middle_school = #{middleSchool,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null">
+				grade = #{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="classId != null">
+				class_id = #{classId,jdbcType=INTEGER},
+			</if>
+			<if test="examinee != null">
+				examinee = #{examinee,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="token != null">
+				token = #{token,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+		<!-- UPDATE t_student t set t.PASSWORD = #{password,jdbcType=VARCHAR} WHERE 
+			t.id = #{id,jdbcType=INTEGER} -->
+	</update>
+
+	<update id="updateEvaluate" parameterType="cn.it.entity.vo.EvaluateVO">
+		update t_evaluate
+		<set>
+			<if test="evaluateScore != null">
+				evaluate_score = #{evaluateScore,jdbcType=INTEGER},
+			</if>
+			<if test="evaluateText != null">
+				evaluate_text = #{evaluateText,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where class_course_id = #{classCourseId,jdbcType=INTEGER} and
+		student_id = #{studentId,jdbcType=VARCHAR}
+	</update>
+
+	<update id="update" parameterType="cn.it.entity.Student">
+		update t_student
+		set user_id =
+		#{userId,jdbcType=INTEGER},
+		student_name =
+		#{studentName,jdbcType=VARCHAR},
+		student_no =
+		#{studentNo,jdbcType=VARCHAR},
+		gender = #{gender,jdbcType=INTEGER},
+		natives = #{natives,jdbcType=VARCHAR},
+		birthday =
+		#{birthday,jdbcType=TIMESTAMP},
+		address = #{address,jdbcType=VARCHAR},
+		enter_date = #{enterDate,jdbcType=TIMESTAMP},
+		phone =
+		#{phone,jdbcType=VARCHAR},
+		QQ = #{qq,jdbcType=VARCHAR},
+		email =
+		#{email,jdbcType=VARCHAR},
+		national = #{national,jdbcType=VARCHAR},
+		Political = #{political,jdbcType=VARCHAR},
+		idCard =
+		#{idcard,jdbcType=VARCHAR},
+		family_phone =
+		#{familyPhone,jdbcType=VARCHAR},
+		middle_school =
+		#{middleSchool,jdbcType=VARCHAR},
+		grade = #{grade,jdbcType=VARCHAR},
+		class_id = #{classId,jdbcType=INTEGER},
+		examinee =
+		#{examinee,jdbcType=VARCHAR},
+		password = #{password,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+
+	<insert id="addStudentList" useGeneratedKeys="true"
+		parameterType="java.util.List">
+		<selectKey resultType="long" keyProperty="id" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into t_student (
+		id,
+		user_id,
+		student_name,
+		student_no,
+		gender,
+		natives,
+		birthday,
+		address,
+		enter_date,
+		phone,
+		QQ,
+		email,
+		national,
+		Political,
+		idCard,
+		family_phone,
+		middle_school,
+		grade,
+		class_id,
+		examinee,
+		password
+		)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(
+			#{item.id,jdbcType=INTEGER},
+			#{item.userId,jdbcType=INTEGER},
+			#{item.studentName,jdbcType=VARCHAR},
+			#{item.studentNo,jdbcType=VARCHAR},
+			#{item.gender,jdbcType=INTEGER},
+			#{item.natives,jdbcType=VARCHAR},
+			#{item.birthday,jdbcType=TIMESTAMP},
+			#{item.address,jdbcType=VARCHAR},
+			#{item.enterDate,jdbcType=TIMESTAMP},
+			#{item.phone,jdbcType=VARCHAR},
+			#{item.qq,jdbcType=VARCHAR},
+			#{item.email,jdbcType=VARCHAR},
+			#{item.national,jdbcType=VARCHAR},
+			#{item.political,jdbcType=VARCHAR},
+			#{item.idcard,jdbcType=VARCHAR},
+			#{item.familyPhone,jdbcType=VARCHAR},
+			#{item.middleSchool,jdbcType=VARCHAR},
+			#{item.grade,jdbcType=VARCHAR},
+			#{item.classId,jdbcType=INTEGER},
+			#{item.examinee,jdbcType=VARCHAR},
+			#{item.password,jdbcType=VARCHAR}
+			)
+		</foreach>
+	</insert>
+</mapper>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>毕业设计</title>
+    <link href="../css/bootstrap.css" rel="stylesheet">
+    <link href="../css/bootstrap-table.min.css" rel="stylesheet">
+    <link href="../css/conn.css" rel="stylesheet">
+    <style type="text/css">
+    	.detail,tbody > tr > td:first-child{ width:30px;}
+		thead > tr > th:nth-child(3),tbody > tr > td:nth-child(3){ display:none;}
+		/*#sidebar{ margin-left:-210px;}
+		.main-content{ margin-left:0;}*/
+        .select,#chart{ width:48%; height:500px; float:left; margin-left:5px; 
+            -webkit-box-sizing: border-box;
+               -moz-box-sizing: border-box;
+                    box-sizing: border-box;}
+                    .pickListButtons {
+              padding: 10px;
+              text-align: center;
+            }
+            .pickListButtons button {
+              margin-bottom: 5px;
+            }
+            .pickListSelect {
+              height: 200px !important;
+            }
+            #chart{ border: 1px solid #ccc;}
+            #btn{ float:right;}
+    </style>
+  </head>
+  <body>
+    <section id="container">
+    	<header class="header">
+        	<div class="sidebar-toggle-box">
+            	<div class="glyphicon glyphicon-menu-hamburger tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
+            </div>
+            <a href="index.html" class="logo">FLATLAB</a>
+              <div class="collapse navbar-collapse">
+                <div class="dropdown">
+                  <a class="dropdown-toggle user-info" type="button" id="profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <img src="../images/2.jpg" alt="" />
+                    <span>Toby</span>
+                    <span class="caret"></span>
+                  </a>
+                  <ul class="dropdown-menu pull-right extended" aria-labelledby="profile">
+                    <div class="log-arrow-up"></div>
+                    <li><a href="/teacher/manage/teacherProfile.html"><i class="glyphicon glyphicon-briefcase"></i>Profile</a></li>
+                    <li><a href="##"><i class="glyphicon glyphicon-cog"></i>Setting</a></li>
+                    <li><a href="##"><i class="glyphicon glyphicon-tint"></i>Notification</a></li>
+                    <li><a href="##"><i class="glyphicon glyphicon-log-out"></i>Log Out</a></li>
+                  </ul>
+                </div>
+            </div>
+        </header>
+        <aside>
+            <div id="sidebar" class="nav-collapse ">
+                <ul class="sidebar-menu">
+                    <li>
+                        <a href="/teacher/index.html">
+                            <i class="glyphicon glyphicon-pencil"></i>
+                            <span>首页</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="##">
+                            <i class="glyphicon glyphicon-pencil"></i>
+                            <span>学生管理</span>
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                        <ul class="sec-menu">
+                            <li><a href="/teacher/manage/student.html"><i></i><span>学生信息</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="active">
+                        <a href="##">
+                            <i class="glyphicon glyphicon-pencil"></i>
+                            <span>成绩管理</span>
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                        <ul class="sec-menu" style="display:block;">
+                            <li><a href="/teacher/manage/score.html"><i></i><span>成绩信息</span></a></li>
+                            <li><a href="/teacher/manage/compareScore.html" style="color:#FF6C60"><i></i><span>成绩查看</span></a></li>
+                        </ul>
+                    </li>
+                   
+                </ul>
+            </div>
+        </aside>
+        <section class="main-content">
+        	<section class="wrapper">
+                <div class="select">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                          <h3 class="panel-title">PickList Demo</h3>
+                        </div>
+                        <div class="panel-body">
+                          <div class="form-group col-sm-6">
+                              <select name="" id="" class="form-control">
+                                  <option value="">2012-2013</option>
+                              </select>
+                          </div>
+                          <div class="form-group col-sm-6">
+                              <select name="" id="" class="form-control">
+                                  <option value="">计算机网络</option>
+                              </select>
+                          </div>
+                          <div id="pickList"></div>
+                        </div>
+                        <div class="panel-footer clearfix">
+                            <button type="button" class="btn btn-info" id="btn">生成图表</button>
+                        </div>
+                   </div>
+                </div>
+                <div id="chart"></div>
+            </section>
+        </section>
+    </section>
+<!--模态对话框-->
+	<script src="../js/jquery-1.11.1.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/index.js"></script>
+    <script type="text/javascript" src="../js/multiselect.js"></script>
+    <script type="text/javascript" src="../js/echarts.min.js"></script>
+    <script type="text/javascript" src="../js/scoreChart.js"></script>
+    <script>
+	  $(function(){
+		$(".guanbi,.close").click(function(){
+            	 $(".modal-backdrop").hide();
+		});
+		$("#trash").click(function(){
+			modal("#studentsModal",'danger');
+		});
+		$("#comfirm").on("click",function(){
+			$(".modal-backdrop").hide();
+			 var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
+                return row.id;
+            });
+			console.log(ids);
+		});
+
+        $("#btn").on("click",function(){
+            var option = $("#pickListResult option").map(function(){return $(this).val();}).get().join(", ");
+            console.log(option);
+            chart();
+        });
+	  });
+    </script>
+  </body>
+</html>

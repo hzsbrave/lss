@@ -1,0 +1,60 @@
+@charset "utf-8";
+body{ background:#f1f2f7;}
+::selection{ background:#FF6C60; color:#fff;}
+.container{ width:100%; height:100%;}
+.header{ min-height:60px; position:fixed; width:100%;  background:#fff; z-index:1000; padding:0 15px; border-bottom:1px solid #E9EAF3;}
+.sidebar-toggle-box{ float:left; margin-top:20px; padding-right:15px;}
+.sidebar-toggle-box > .glyphicon{ font-size:20px; cursor:pointer;}
+a.logo{ float:left; font-size:24px; margin-top:14px; color:#2e2e2e;} 
+a.logo:hover{ text-decoration:none;}
+
+
+#sidebar{ width:210px; height:100%; background:#2a3542; min-height:800px; position:fixed; z-index:999;}
+.main-content{ margin-left:210px; min-height:800px;}
+.wrapper{ width:100%; height:100%; margin-top:60px; padding:15px; display:inline-block;}
+.sidebar-menu{ margin-top:75px; padding-left:0;}
+ul.sidebar-menu li{ margin:0 10px 5px 10px;  position:relative;border-radius:5px; overflow:hidden; }
+ul.sidebar-menu > li:hover{ background:#35404D;}
+ul.sidebar-menu > li:hover a i{ color:#FF6C60;}
+ul.sidebar-menu > li.active,ul.sidebar-menu > li.hover,ul.sidebar-menu > li.focus,
+ul.sidebar-menu > li.active a.active, ul.sidebar-menu > li.active a:hover, ul.sidebar-menu > li a:focus{ background:#35404D;}
+ul.sidebar-menu > li.active a i{ color:#FF6C60;}
+ul.sidebar-menu li a{ color:#aeb2b7; text-decoration:none; padding:15px 0 15px 10px; display:block; transition:all 0.3s ease; font-size:12px; }
+ul.sidebar-menu li a span.glyphicon{ position:absolute; right:10px; top:19px;}
+ul.sidebar-menu li a i{ padding-right:8px;}
+ul.sec-menu{ padding-left:0; display:none;}
+ul.sec-menu li{ margin-bottom:0; }
+ul.sec-menu li a:hover,ul.sec-menu li a:focus{ color:#FF6C60; }
+.alert{ padding:5px 5px 6px 10px; margin-bottom:0; display:none;}
+.modal-content{ overflow:hidden;}
+.modal-backdrop{ display:none;}
+.modal-footer > .btn:first-child{ background:#bdc3c7; color:#FFFFFF !important;}
+
+/*登录信息*/
+.dropdown{ height:60px; display:block; float:right;}
+#profile{ margin-top: 6px;}
+.log-arrow-up{ background:url(../images/arrow-up.png) no-repeat; width:20px; height:11px; position: absolute; top:-10px; right:40px;}
+.extended{ border:none; top:60px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.176) !important;}
+.user-info{ padding:6px 12px; display:block; text-align: center; line-height: 34px; color:#555; cursor:pointer; border:1px solid #f0f0f8; border-radius: 4px;} 
+.user-info > img{  height:29px;}
+.user-info:hover{text-decoration: none;}
+.extended{ width:268px; padding:0;}
+.extended > li{ width:33.3%; float:left;}
+.extended > li:last-child{ width:100%; background-color: #a9d96c; text-align: center; border-radius: 0 0 3px 3px; color:#fff;}
+.extended li a{ padding:15px 10px; text-align: center; color:#a4abbb;}
+.extended > li > a:hover, .extended > li > a:focus{ color:#a4abbb; background:none;}
+.extended > li > a:hover i{ color:#50c8ea;}
+.extended > li:last-child > a,.extended > li:last-child > a:hover,.extended > li:last-child > a:focus,.extended > li:last-child > a:hover i{ color:#fff;}
+.extended li a i{ display:block;}
+/*登录信息结束*/
+
+section.panel{ border:none;}
+.state-overview .symbol,.state-overview .value{ display: inline-block; text-align: center;}
+.state-overview .symbol{ border-radius: 4px 0px 0px 4px; width:40%; padding:25px 15px;  color:#fff;}
+.state-overview .symbol > .glyphicon{ font-size: 50px;}
+.state-overview .value{ width:58%; float: right; color:#c6cad6;}
+.state-overview .value h2{ font-size: 36px; font-weight: normal;}
+.state-overview .terques{ background:#6ccac9;}
+.state-overview .red{ background:#ff6c60;}
+.state-overview .yellow{ background:#f8d347;}
+.state-overview .blue{ background:#57c8f2;}

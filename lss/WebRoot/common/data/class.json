@@ -1,0 +1,105 @@
+
+ [
+    {
+      "id": 0,
+      "classname": "2012网络工程2班",
+      "grade": "2012级",
+	  "major":"计算机科学与技术（网络工程）",
+	  "stuCount":"23人"
+    },
+    {
+      "id": 1,
+      "classname": "Item 1",
+      "grade": "$1"
+    },
+    {
+      "id": 2,
+      "classname": "Item 2",
+      "grade": "$2"
+    },
+    {
+      "id": 3,
+      "classname": "Item 3",
+      "grade": "$3"
+    },
+    {
+      "id": 4,
+      "classname": "Item 4",
+      "grade": "$4"
+    },
+    {
+      "id": 5,
+      "classname": "Item 5",
+      "grade": "$5"
+    },
+    {
+      "id": 6,
+      "classname": "Item 6",
+      "grade": "$6"
+    },
+    {
+      "id": 7,
+      "classname": "Item 7",
+      "grade": "$7"
+    },
+    {
+      "id": 8,
+      "classname": "Item 8",
+      "grade": "$8"
+    },
+    {
+      "id": 9,
+      "classname": "Item 9",
+      "grade": "$9"
+    },
+    {
+      "id": 10,
+      "classname": "Item 10",
+      "grade": "$10"
+    },
+    {
+      "id": 11,
+      "classname": "Item 11",
+      "grade": "$11"
+    },
+    {
+      "id": 12,
+      "classname": "Item 12",
+      "grade": "$12"
+    },
+    {
+      "id": 13,
+      "classname": "Item 13",
+      "grade": "$13"
+    },
+    {
+      "id": 14,
+      "classname": "Item 14",
+      "grade": "$14"
+    },
+    {
+      "id": 15,
+      "classname": "Item 15",
+      "grade": "$15"
+    },
+    {
+      "id": 16,
+      "classname": "Item 16",
+      "grade": "$16"
+    },
+    {
+      "id": 17,
+      "classname": "Item 17",
+      "grade": "$17"
+    },
+    {
+      "id": 18,
+      "classname": "Item 18",
+      "grade": "$18"
+    },
+    {
+      "id": 19,
+      "classname": "Item 19",
+      "grade": "$19"
+    }
+  ]

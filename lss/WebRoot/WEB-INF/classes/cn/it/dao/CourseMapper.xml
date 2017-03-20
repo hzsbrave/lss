@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.it.dao.CourseMapper">
+	<resultMap id="BaseResultMap" type="cn.it.entity.Course">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="course_name" property="courseName" jdbcType="VARCHAR" />
+		<result column="need_hours" property="needHours" jdbcType="TINYINT" />
+		<result column="major_id" property="majorId" jdbcType="INTEGER" />
+		<result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="BaseResultMapForList" type="cn.it.entity.Course"
+		extends="BaseResultMap">
+		<result column="total" property="total" jdbcType="INTEGER" />
+	</resultMap>
+
+	<resultMap id="MyCourseMap" type="cn.it.entity.vo.MyCourseVO">
+		<result column="student_id" property="studentId" jdbcType="INTEGER" />
+		<result column="teacher_name" property="teacherName" jdbcType="VARCHAR" />
+		<result column="course_name" property="courseName" jdbcType="VARCHAR" />
+		<result column="course_id" property="courseId" jdbcType="INTEGER" />
+		<result column="course_introduce" property="courseIntroduce" jdbcType="VARCHAR" />
+		<result column="credit" property="credit" jdbcType="VARCHAR" />
+		<result column="week_name" property="weekName" jdbcType="VARCHAR" />
+		<result column="day_name" property="dayName" jdbcType="VARCHAR" />
+		<result column="section_name" property="sectionName" jdbcType="VARCHAR" />
+		<result column="like_num" property="likeNum" jdbcType="INTEGER" />
+		<result column="select_num" property="selectNum" jdbcType="INTEGER" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="building_name" property="buildingName" jdbcType="VARCHAR" />
+		<result column="room_name" property="roomName" jdbcType="VARCHAR" />
+		<result column="people_num" property="peopleNum" jdbcType="INTEGER" />
+		<result column="week_id" property="weekId" jdbcType="INTEGER" />
+		<result column="day_id" property="dayId" jdbcType="INTEGER" />
+		<result column="section_id" property="sectionId" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, course_name, need_hours, major_id, create_date
+	</sql>
+
+	<sql id="Base_Column_List_For_List">
+		id, course_name, need_hours, major_id, create_date,total
+	</sql>
+
+	<select id="select" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_course
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="selectCourse" resultMap="BaseResultMap"
+		parameterType="course">
+		select
+		<include refid="Base_Column_List" />
+		from t_course a
+		where a.course_name = #{courseName,jdbcType=VARCHAR}
+		and a.major_id =
+		#{majorId,jdbcType=INTEGER}
+	</select>
+
+	<select id="selectList" resultMap="BaseResultMap" parameterType="course">
+		select
+		<include refid="Base_Column_List" />
+		from t_course
+	</select>
+
+	<select id="selectListByMajorId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_course where major_id = #{majorId,jdbcType=INTEGER}
+	</select>
+
+	<select id="selectListPage" resultMap="BaseResultMapForList"
+		parameterType="course">
+		select
+		<include refid="Base_Column_List_For_List" />
+		from (select s.*,(select count(1) from t_course)total from t_course
+		s)t
+		where t.id limit
+		#{pagedIndex,jdbcType=INTEGER},#{pagedSize,jdbcType=INTEGER};
+	</select>
+
+	<select id="appSelectMyCourse" resultMap="MyCourseMap" parameterType="cn.it.entity.model.CoursePO">
+		SELECT
+		<if test="flag == null">
+			DISTINCT(tw.week_name) weekName,
+			<if test="studentId != null">
+			tcr.student_id studentId,
+			</if>
+			tt.teacher_name teacherName,
+			tc.course_name courseName,
+			tc.id courseId,
+			tcd.course_introduce courseIntroduce,
+			tcd.credit credit,
+			tcd.like_num likeNum,
+			tcd.type type,
+			tcd.select_num selectNum
+		</if>
+		<if test="flag != null">
+			<if test="studentId != null">
+				tcr.student_id studentId,
+			</if>
+			tt.teacher_name teacherName,
+			tc.course_name courseName,
+			tc.id courseId,
+			tcd.course_introduce courseIntroduce,
+			tcd.credit credit,
+			tw.week_name weekName,
+			tw.week_id weekId,
+			td.day_name dayName,
+			td.day_id dayId,
+			tse.section_id sectionId,
+			tse.section_name sectionName,
+			tcd.like_num likeNum,
+			tcd.select_num selectNum,
+			tcd.type type,
+			tb.building_name buildingName,
+			tr.room_name roomName,
+			tbr.num peopleNum
+		</if>
+		FROM
+		<if test="studentId != null">
+			t_c_relationship tcr,
+		</if>
+			t_course_detail tcd,
+			t_course tc,
+			t_teacher tt,
+			t_building_room tbr,
+			t_building tb,
+			t_room tr,
+			t_week tw,
+			t_day td,
+			t_section tse
+		WHERE
+		 	tcd.course_id = tc.id
+		<if test="studentId != null">
+			AND tcr.course_detail_id = tcd.tcd_id
+		</if>
+		AND tcd.teacher_id = tt.id
+		AND tcd.building_room_id = tbr.tbr_id
+		AND tbr.building_id = tb.building_id
+		AND tbr.room_id = tr.room_id
+		AND tcd.week_id = tw.week_id
+		AND tcd.day_id = td.day_id
+		AND tcd.section_id = tse.section_id
+		<if test="studentId != null">
+			AND tcr.student_id = #{studentId,jdbcType=INTEGER}
+		</if>
+		<if	test="courseId != null">
+			AND tcd.course_id = #{courseId,jdbcType=INTEGER}
+		</if>
+		<if test="weekId != null">
+			AND tw.week_id = #{weekId,jdbcType=INTEGER}
+		</if>
+		<if test="dayId != null">
+			AND td.day_id = #{dayId,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="appSelectAllMyCourse" resultMap="MyCourseMap" parameterType="java.lang.Integer">
+		SELECT
+			tcr.student_id studentId,
+			tt.teacher_name teacherName,
+			tc.course_name courseName,
+			tc.id courseId,
+			tcd.course_introduce courseIntroduce,
+			tcd.credit credit,
+			tw.week_name weekName,
+			tw.week_id weekId,
+			td.day_name dayName,
+			td.day_id dayId,
+			tse.section_id sectionId,
+			tse.section_name sectionName,
+			tcd.like_num likeNum,
+			tcd.select_num selectNum,
+			tcd.type type,
+			tb.building_name buildingName,
+			tr.room_name roomName,
+			tbr.num peopleNum
+		FROM
+			t_c_relationship tcr,
+			t_course_detail tcd,
+			t_course tc,
+			t_teacher tt,
+			t_building_room tbr,
+			t_building tb,
+			t_room tr,
+			t_week tw,
+			t_day td,
+			t_section tse
+		WHERE
+		 	tcd.course_id = tc.id
+		AND tcr.course_detail_id = tcd.tcd_id
+		AND tcd.teacher_id = tt.id
+		AND tcd.building_room_id = tbr.tbr_id
+		AND tbr.building_id = tb.building_id
+		AND tbr.room_id = tr.room_id
+		AND tcd.week_id = tw.week_id
+		AND tcd.day_id = td.day_id
+		AND tcd.section_id = tse.section_id
+		AND tcr.student_id = #{studentId,jdbcType=INTEGER}
+	</select>
+	
+	<select id="appSelectMyCourseSimple" resultMap="MyCourseMap"
+		parameterType="java.lang.Integer">
+		SELECT
+		DISTINCT(t.courseId),t.courseName,t.courseIntroduce,t.teacherName FROM
+		(SELECT
+			tcd.course_introduce courseIntroduce,
+			tt.teacher_name teacherName,
+			tc.id courseId,
+			tc.course_name courseName
+		FROM
+			t_c_relationship tcr,
+			t_course_detail tcd,
+			t_course tc,
+			t_teacher tt
+		WHERE
+			tcr.course_detail_id = tcd.tcd_id
+		AND tcd.course_id = tc.id
+		AND tcd.teacher_id = tt.id
+		AND tcr.student_id = #{id,jdbcType=INTEGER})t
+	</select>
+	
+	<select id="selectAllCourse" resultMap="MyCourseMap" parameterType="java.lang.String">
+		SELECT 
+			DISTINCT (tc.id),
+			tc.id,
+			tc.course_name,
+			tcd.course_id,
+			tcd.course_introduce,
+			tcd.credit,
+			tt.teacher_name
+		FROM
+			t_course tc,
+			t_course_detail tcd,
+			t_teacher tt
+		WHERE
+			tc.id = tcd.course_id
+		AND tt.id = tcd.teacher_id
+		AND tcd.type = #{type,jdbcType=VARCHAR}
+	</select>
+	
+	<delete id="deleteList">
+		delete from t_course where id in
+		<foreach collection="array" close=")" open="(" item="id"
+			separator=",">
+			#{id}
+		</foreach>
+	</delete>
+
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from t_course
+		where id =
+		#{id,jdbcType=INTEGER}
+	</delete>
+
+	<insert id="insert" parameterType="cn.it.entity.Course">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+          SELECT LAST_INSERT_ID()
+     	</selectKey>
+		insert into t_course (id,
+		course_name, need_hours,
+		major_id, create_date)
+		values
+		(#{id,jdbcType=INTEGER}, #{courseName,jdbcType=VARCHAR},
+		#{needHours,jdbcType=TINYINT},
+		#{majorId,jdbcType=INTEGER},
+		#{createDate,jdbcType=TIMESTAMP})
+	</insert>
+
+	<update id="update" parameterType="cn.it.entity.Course">
+		update t_course
+		set course_name
+		= #{courseName,jdbcType=VARCHAR},
+		need_hours =
+		#{needHours,jdbcType=TINYINT},
+		major_id = #{majorId,jdbcType=INTEGER},
+		create_date = #{createDate,jdbcType=TIMESTAMP}
+		where id =
+		#{id,jdbcType=INTEGER}
+	</update>
+</mapper>

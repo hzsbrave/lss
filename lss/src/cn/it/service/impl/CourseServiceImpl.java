@@ -594,7 +594,9 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 	@Override
 	public boolean appCheckMySelectCourse(String student_id, String course_id) {
 		// TODO Auto-generated method stub
-		List<MyCourseVO> myList = courseMapper.appSelectAllMyCourse(Integer.parseInt(student_id));
+		CoursePO coursePO = new CoursePO();
+		coursePO.setStudentId(Integer.parseInt(student_id));
+		List<MyCourseVO> myList = courseMapper.appSelectAllMyCourse(coursePO);
 		CoursePO  c = new CoursePO();
 		c.setStudentId(null);
 		c.setCourseId(Integer.parseInt(course_id));

@@ -20,8 +20,8 @@ public class Example {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		String appKey = "c9kqb3rdkb09j";//替换成您的appkey
-		String appSecret = "86tnyiqdVOhA";//替换成匹配上面key的secret
+		String appKey = "kj7swf8ok4o52";//替换成您的appkey
+		String appSecret = "9IA4YzntVvOAXx";//替换成匹配上面key的secret
 		
 		Reader reader = null ;
 		RongCloud rongCloud = RongCloud.getInstance(appKey, appSecret);
@@ -30,7 +30,7 @@ public class Example {
 		System.out.println("************************User********************");
 //		// 获取 Token 方法 
 		
-		TokenReslut userGetTokenResult = rongCloud.user.getToken("101764021", "18312751625@qq.com", "http://www.rongcloud.cn/images/logo.png");
+		TokenReslut userGetTokenResult = rongCloud.user.getToken("classschedule", "1187456698@qq.com", "http://www.rongcloud.cn/images/logo.png");
 		System.out.println("getToken:  " + userGetTokenResult.toString());
 //		
 //		// 刷新用户信息方法 
@@ -90,11 +90,11 @@ public class Example {
 //		} 
 		
 		// 发送系统消息方法（一个用户向一个或多个用户发送系统消息，单条消息最大 128k，会话类型为 SYSTEM。每秒钟最多发送 100 条消息，每次最多同时向 100 人发送，如：一次发送 100 人时，示为 100 条消息。） 
-		String[] messagePublishSystemToUserId = {"101764021"};
+/*		String[] messagePublishSystemToUserId = {"101764021"};
 		String timestamp = String.valueOf(System.currentTimeMillis() / 1000);
 		TxtMessage messagePublishSystemTxtMessage = new TxtMessage("hello1212", "helloExtra");
 		CodeSuccessReslut messagePublishSystemResult = rongCloud.message.PublishSystem("mvonotice", messagePublishSystemToUserId, messagePublishSystemTxtMessage, "nnthisisapushmm", timestamp, 0, 0);
-		System.out.println("PublishSystem:  " + messagePublishSystemResult.toString());
+		System.out.println("PublishSystem:  " + messagePublishSystemResult.toString());*/
 		
 //		// 发送系统模板消息方法（一个用户向一个或多个用户发送系统消息，单条消息最大 128k，会话类型为 SYSTEM.每秒钟最多发送 100 条消息，每次最多同时向 100 人发送，如：一次发送 100 人时，示为 100 条消息。） 
 //		try {

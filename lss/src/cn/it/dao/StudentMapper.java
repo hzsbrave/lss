@@ -23,4 +23,6 @@ public interface StudentMapper extends BaseMapper<Student> {
 	public int updateEvaluate(EvaluateVO evaluateVO);
 	
 	public Evaluate selectEvaluateBySidAndCid(Evaluate evaluate);
+	
+	public List<Student> selectAllStudent();
 }

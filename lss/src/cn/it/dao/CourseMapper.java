@@ -14,5 +14,5 @@ public interface CourseMapper extends BaseMapper<Course> {
     public List<MyCourseVO> appSelectMyCourse(CoursePO coursePO);
     public List<MyCourseVO> appSelectMyCourseSimple(int student_id);
     public List<MyCourseVO> selectAllCourse(String type);
-    public List<MyCourseVO> appSelectAllMyCourse(int student_id);
+    public List<MyCourseVO> appSelectAllMyCourse(CoursePO coursePO);
 }

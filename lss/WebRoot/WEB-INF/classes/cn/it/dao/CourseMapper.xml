@@ -160,7 +160,7 @@
 		</if>
 	</select>
 	
-	<select id="appSelectAllMyCourse" resultMap="MyCourseMap" parameterType="java.lang.Integer">
+	<select id="appSelectAllMyCourse" resultMap="MyCourseMap" parameterType="cn.it.entity.model.CoursePO">
 		SELECT
 			tcr.student_id studentId,
 			tt.teacher_name teacherName,
@@ -202,6 +202,9 @@
 		AND tcd.day_id = td.day_id
 		AND tcd.section_id = tse.section_id
 		AND tcr.student_id = #{studentId,jdbcType=INTEGER}
+		AND tw.week_id = #{weekId,jdbcType=INTEGER}
+		AND td.day_id = #{dayId,jdbcType=INTEGER}
+		AND tse.section_id = #{sectionId,jdbcType=INTEGER}
 	</select>
 	
 	<select id="appSelectMyCourseSimple" resultMap="MyCourseMap"

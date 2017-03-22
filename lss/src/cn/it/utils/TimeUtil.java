@@ -1,9 +1,11 @@
 package cn.it.utils;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class TimeUtils {
+public class TimeUtil {
 	/**
 	 * 
 	 * 判断时间是否在时间段内 *
@@ -21,7 +23,7 @@ public class TimeUtils {
 	 * 结束时间 00:05:00
 	 * 
 	 * @return
-	 * 
+	 *
 	 */
 	public static boolean isInDate(Date date, String strDateBegin, String strDateEnd) {
 
@@ -62,6 +64,20 @@ public class TimeUtils {
 			}
 		} else {
 			return false;
+		}
+	}
+	
+	public static void main(String[] args) {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			Date d1 = df.parse("2017-02-20 00:00:00");
+			Date d2 = df.parse(df.format(new Date()));
+			long diff = d2.getTime() - d1.getTime();
+			long days = diff / (1000 * 60 * 60 * 24);
+			int week = (int) (days/7)+1;
+			int day = (int) (days%7)+1;
+			System.out.println(days+" "+week+" "+day);
+		} catch (Exception e) {
 		}
 	}
 }

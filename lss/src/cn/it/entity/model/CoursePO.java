@@ -7,7 +7,14 @@ public class CoursePO {
 	private Integer weekId;
 	private Integer dayId;
 	private String type;
+	private Integer sectionId;
 	
+	public Integer getSectionId() {
+		return sectionId;
+	}
+	public void setSectionId(Integer sectionId) {
+		this.sectionId = sectionId;
+	}
 	public String getType() {
 		return type;
 	}

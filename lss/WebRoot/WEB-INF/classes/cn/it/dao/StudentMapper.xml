@@ -57,9 +57,13 @@
 		select
 		<include refid="Base_Column_List" />
 		from t_student
-		<if test="id != null">
 		where id = #{id,jdbcType=INTEGER}
-		</if>
+	</select>
+	
+	<select id="selectAllStudent" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_student
 	</select>
 
 	<select id="selectStudentByNo" resultMap="BaseResultMap"

@@ -36,6 +36,7 @@ public class TimingLoadDateServiceImpl implements TimingLoadDateService {
 	@Override
 	public void sendScheduleMessageForAM() {
 		// TODO Auto-generated method stub
+		System.out.println("sendScheduleMessageForAM....."+new Date());
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		int week = 0;
 		int day = 0;
@@ -67,9 +68,12 @@ public class TimingLoadDateServiceImpl implements TimingLoadDateService {
 					}
 					CoursePO coursePO = new CoursePO();
 					coursePO.setStudentId(studentList.get(i).getId());
-					coursePO.setWeekId(week);
+				/*	coursePO.setWeekId(week);
 					coursePO.setDayId(day);
-					coursePO.setSectionId(section);
+					coursePO.setSectionId(section);*/
+					coursePO.setWeekId(1);
+					coursePO.setDayId(1);
+					coursePO.setSectionId(1);
 					List<MyCourseVO> list = courseMapper.appSelectAllMyCourse(coursePO);
 					if (list.size() > 0) {
 						String[] str = null;
@@ -91,8 +95,8 @@ public class TimingLoadDateServiceImpl implements TimingLoadDateService {
 		}
 	}
 	
-	//@Scheduled(cron = "0 0 14,15,16,17,18,19,20 * * ? ")
-	@Scheduled(cron = "* * 0/1 * * ? ")
+	@Scheduled(cron = "0 0 14,15,16,17,18,19,20 * * ? ")
+	//@Scheduled(cron = "* * 0/1 * * ? ")
 	@Override
 	public void sendScheduleMessageForPM() {
 		// TODO Auto-generated method stub
@@ -144,6 +148,7 @@ public class TimingLoadDateServiceImpl implements TimingLoadDateService {
 							MyCourseVO myCourseVO = new  MyCourseVO();
 							myCourseVO = list.get(0);
 							JSONObject json = JSONObject.fromObject(myCourseVO);
+							System.out.println("发送给"+studentList.get(i).getStudentName()+",他（她）将要上"+myCourseVO.getCourseName());
 							System.out.print(t.publishSystemMessage("classschedule", str, "你接下来要上《"+myCourseVO.getCourseName()+"》",
 									json.toString(), "你收到一个上课提醒消息", ""));
 						} catch (Exception e) {

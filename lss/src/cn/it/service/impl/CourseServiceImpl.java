@@ -10,9 +10,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.ModelAndView;
-
 import cn.it.dao.BuildingRoomMapper;
+import cn.it.dao.ClassesCourseMapper;
 import cn.it.dao.CourseDetailMapper;
 import cn.it.dao.CourseRelationMapper;
 import cn.it.entity.Academy;
@@ -26,6 +25,7 @@ import cn.it.entity.CourseRelation;
 import cn.it.entity.Major;
 import cn.it.entity.Params;
 import cn.it.entity.Room;
+import cn.it.entity.Student;
 import cn.it.entity.Teacher;
 import cn.it.entity.model.CoursePO;
 import cn.it.entity.model.CoursePart;
@@ -48,6 +48,8 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 	private CourseDetailMapper courseDetailMapper;
 	@Autowired
 	private CourseRelationMapper courseRelationMapper;
+	@Autowired
+	private ClassesCourseMapper classesCourseMapper;
 
 	@Override
 	public List<Major> selectMajorList(Major major) {
@@ -161,7 +163,7 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 		return map;
 	}
 
-	@Override
+/*	@Override
 	public int insertClassesCourse(String classes, String course, String major, String teacher) {
 		// TODO Auto-generated method stub
 		ClassesCourse cc = new ClassesCourse();
@@ -186,7 +188,7 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 		} else {
 			return 0;
 		}
-	}
+	}*/
 
 	@Override
 	public ClassesCourseVO getClassesCourse(Params params) {
@@ -367,6 +369,7 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 				if (p == courseDetailList.size()) {
 					is_exist = "0";
 				}
+
 			}
 		} else {
 			is_exist = "1";
@@ -426,7 +429,7 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 		}
 		return i;
 	}
-	
+
 	@Override
 	public List<MyCourseVO> appGetMyCourseByTime(String student_id, String flag, String week_id, String day_id) {
 		// TODO Auto-generated method stub
@@ -438,13 +441,13 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 		List<MyCourseVO> list = courseMapper.appSelectMyCourse(c);
 		return list;
 	}
-	
+
 	@Override
-	public List<MyCourseDetailVO> appGetMyCourse(String student_id,String course_id,String flag){
+	public List<MyCourseDetailVO> appGetMyCourse(String student_id, String course_id, String flag) {
 		// TODO Auto-generated method stub
 		CoursePO c = new CoursePO();
 		c.setCourseId(Integer.parseInt(course_id));
-		if(student_id!=null){
+		if (student_id != null) {
 			c.setStudentId(Integer.parseInt(student_id));
 		}
 		List<MyCourseVO> list = courseMapper.appSelectMyCourse(c);
@@ -555,7 +558,7 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 				}
 				return -1;
 			}
-			
+
 		});
 
 		return resultList;
@@ -597,23 +600,76 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 		CoursePO coursePO = new CoursePO();
 		coursePO.setStudentId(Integer.parseInt(student_id));
 		List<MyCourseVO> myList = courseMapper.appSelectAllMyCourse(coursePO);
-		CoursePO  c = new CoursePO();
+		CoursePO c = new CoursePO();
 		c.setStudentId(null);
 		c.setCourseId(Integer.parseInt(course_id));
 		c.setFlag("1");
 		List<MyCourseVO> courseList = courseMapper.appSelectMyCourse(c);
-		System.out.println(myList+","+courseList);
+		System.out.println(myList + "," + courseList);
 		boolean f = true;
-		outterLoop:for(int i=0;i<myList.size();i++){
-			for(int j=0;j<courseList.size();j++){
-				if(myList.get(i).getWeekId()==courseList.get(j).getWeekId()&&myList.get(i).getDayId()==courseList.get(j).getDayId()&&myList.get(i).getSectionId()==courseList.get(j).getSectionId()){
+		outterLoop: for (int i = 0; i < myList.size(); i++) {
+			for (int j = 0; j < courseList.size(); j++) {
+				if (myList.get(i).getWeekId() == courseList.get(j).getWeekId()
+						&& myList.get(i).getDayId() == courseList.get(j).getDayId()
+						&& myList.get(i).getSectionId() == courseList.get(j).getSectionId()) {
 					f = false;
-					System.out.println("i:"+i+" j:"+j);
-					break outterLoop; 
+					System.out.println("i:" + i + " j:" + j);
+					break outterLoop;
 				}
 			}
 		}
 		return f;
+	}
+
+	@Override
+	public int insertCourseRelationAndClassesCourse(Integer course_id,Integer class_id,Integer major_id,Integer teacher_id){
+		// TODO Auto-generated method stub
+		ClassesCourse _classesCourse = new ClassesCourse();
+		_classesCourse.setClassesId(class_id);
+		_classesCourse.setCourseId(course_id);
+		List<ClassesCourse> list = classesCourseMapper.selectClaCourseByCourseAndClass(_classesCourse);
+		if(list!=null && list.size()>0){
+			return 0;
+		}else{
+			System.out.println("-----------------------插入ClassesCourse表");
+			ClassesCourse cc = new ClassesCourse();
+			cc.setClassesId(class_id);
+			cc.setTeacherId(teacher_id);
+			cc.setMajorId(major_id);
+			cc.setCourseId(course_id);
+			ClassesCourse cc2 = classesCourseMapper.selectClassesCourse(cc);
+			if (cc2 == null) {
+				ClassesCourse classesCourse = new ClassesCourse();
+				classesCourse.setClassesId(class_id);
+				classesCourse.setCourseId(course_id);
+				Course course2 = courseMapper.select(course_id);
+				if (course2 != null) {
+					String string = course2.getNeedHours().toString();
+					classesCourse.setHours(Integer.parseInt(string));
+				}
+				classesCourse.setMajorId(major_id);
+				classesCourse.setTeacherId(teacher_id);
+				classesCourseMapper.insert(classesCourse);
+			} 
+			
+			System.out.println("-----------------------插入CourseRelationShip表");
+			List<CourseDetail> courseDetailList = courseDetailMapper.selectByCourseId(course_id);
+			List<Student> studentList = studentMapper.selectStudentByClassId(class_id);
+			List<CourseRelation> courseRelationList = new ArrayList<CourseRelation>();
+			for(int l=0;l<studentList.size();l++){
+				for(int i=0;i<courseDetailList.size();i++){
+					CourseRelation cr = new CourseRelation();
+					Date date = new Date();
+					cr.setCourseDetailId(courseDetailList.get(i).getTcdId());
+					cr.setStudentId(studentList.get(l).getId());
+					cr.setCreateTime(date);
+					cr.setLastUpdateTime(date);
+					courseRelationList.add(cr);
+				}
+			}
+			courseRelationMapper.addCourseRelationList(courseRelationList);
+			return 1;
+		}
 	}
 
 }

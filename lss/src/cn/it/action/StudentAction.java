@@ -16,15 +16,14 @@ import javax.swing.plaf.synth.SynthSpinnerUI;
 
 import net.sf.json.JSONArray;
 
+
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 import cn.it.push.PushAPI;
 import cn.it.push.models.TokenReslut;
@@ -32,11 +31,9 @@ import cn.it.push.util.GsonUtil;
 
 import cn.it.entity.Academy;
 import cn.it.entity.Classes;
-import cn.it.entity.ClassesCourse;
 import cn.it.entity.Major;
 import cn.it.entity.Params;
 import cn.it.entity.Student;
-import cn.it.entity.StudentParam;
 import cn.it.entity.Teacher;
 import cn.it.entity.model.EvaluatePO;
 import cn.it.entity.vo.EvaluateVO;
@@ -530,26 +527,7 @@ public class StudentAction extends BaseAction {
 		reponse.setCharacterEncoding("utf-8");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Teacher teacher = (Teacher) request.getSession().getAttribute("loginUser");
-		ClassesCourse classesCourse = new ClassesCourse();
-		classesCourse.setTeacherId(teacher.getId());
-		List<ClassesCourse> classesCourseList = (List<ClassesCourse>) classesCourseService.selectList(classesCourse);
-		
-		Student student = new Student();
-		List<Student> list = (List<Student>) studentService.selectList(student);
-		if(classesCourseList.size()>0&&list.size()>0){
-			for (int j = 0; j < list.size(); j++) {
-				for (int i = 0; i < classesCourseList.size(); i++) {
-					if(classesCourseList.get(i).getClassesId().equals(list.get(j).getClassId())){
-						break;
-					}else{
-						if(i==classesCourseList.size()-1){
-							list.remove(j);
-							j--;
-						}
-					}
-				}
-			}
-		}
+		List<Student> list = studentService.selectStudentByTeacherId(teacher.getId());
 		for (int i = 0; i < list.size(); i++) {
 			list.get(i).setEnterTime(sdf.format(list.get(i).getEnterDate()));
 			if(list.get(i).getGender()==0){

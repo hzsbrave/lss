@@ -8,7 +8,6 @@
         });
     });
 	var id = $('#userid').val();
-	var no = $('#studentno').val();
 	var list = [];
 	$("#table").bootstrapTable({
 		   toggle:"table",//不用写 JavaScript 直接启用表格。
@@ -25,8 +24,8 @@
     		   toolbar:"#toolbar",   
     		   //detailView:"false",
     		   columns: [{//表列配置对象,看到列属性的更多细节
-    				field: 'classCourseId',
-    				title: '班级课程ID',
+    				field: 'courseId',
+    				title: '课程ID',
     	            align: 'center',
     	            valign: 'middle',
     	            visible:false
@@ -68,7 +67,7 @@
             	   var flag = 0;
             	   if(list!=null&&list.length>0){
             		   for(var i=0;i<list.length;i++){
-                		   if(list[i].classCourseId == row.classCourseId){
+                		   if(list[i].courseId == row.courseId){
                 			   list[i].evaluateScore = row.evaluateScore;
                 			   list[i].evaluateText = row.evaluateText;
                 			   flag = 1;
@@ -77,10 +76,10 @@
                 	   }
             	   }
             	   if(flag==0){
-            		   row.studentId = no;
+            		   row.studentId = id;
                 	   list.push(row);
             	   }
-            	  // alert(list[list.length-1].classCourseId+list[list.length-1].evaluateScore+list[list.length-1].evaluateText);
+            	 //  alert(list[list.length-1].courseId+list[list.length-1].evaluateScore+list[list.length-1].evaluateText+" "+list[list.length-1].studentId);
 
                }
 	});
@@ -88,7 +87,6 @@
 	$("#submit").on("click",function(){
 		var obj = new Object();
 		obj.list = list;
-		
 		$.ajax({
 			type:"POST",
 			url:$('#hidden').val()+"/student/updateevaluate.action",

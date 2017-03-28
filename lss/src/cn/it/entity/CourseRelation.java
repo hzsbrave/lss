@@ -52,4 +52,11 @@ public class CourseRelation {
     public void setLastUpdateTime(Date lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
     }
+
+	@Override
+	public String toString() {
+		return "CourseRelation [tcrId=" + tcrId + ", studentId=" + studentId + ", courseDetailId=" + courseDetailId
+				+ ", createTime=" + createTime + ", lastUpdateTime=" + lastUpdateTime + "]";
+	}
+    
 }

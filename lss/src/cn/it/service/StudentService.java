@@ -2,6 +2,7 @@ package cn.it.service;
 
 import java.util.List;
 
+import cn.it.entity.Course;
 import cn.it.entity.Evaluate;
 import cn.it.entity.Student;
 import cn.it.entity.vo.EvaluateVO;
@@ -28,5 +29,9 @@ public interface StudentService extends BaseService<Student> {
 	public Evaluate selectEvaluateBySidAndCid(Evaluate evaluate);
 	
 	public StudentSolrVO queryStudent(String queryString, String sort, Integer page) throws Exception;
+	
+    public List<Student> selectStudentByTeacherId(Integer teacher_id);
+    
+    public List<Course> selectCourseByTeacherId(Integer teacher_id);
 	
 }

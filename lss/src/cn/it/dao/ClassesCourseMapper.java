@@ -9,4 +9,5 @@ public interface ClassesCourseMapper extends BaseMapper<ClassesCourse> {
     public List<ClassesCourse> selectListPage(ClassesCourse classescourse);
     public ClassesCourse selectClassesCourse(ClassesCourse classescourse);
     public List<ClassesCourse> selectClassesCourseByCourseId(int course_id);
+    public List<ClassesCourse> selectClaCourseByCourseAndClass(ClassesCourse classesCourse);
 }

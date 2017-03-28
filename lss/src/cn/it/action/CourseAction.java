@@ -33,6 +33,7 @@ import cn.it.entity.CourseRelation;
 import cn.it.entity.Major;
 import cn.it.entity.Params;
 import cn.it.entity.Room;
+import cn.it.entity.Student;
 import cn.it.entity.Teacher;
 import cn.it.entity.model.CoursePO;
 import cn.it.entity.model.CoursePart;
@@ -147,8 +148,8 @@ public class CourseAction extends BaseAction {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 
 		String is_exist;
-		int i = courseService.insertClassesCourse(classes, course, major, teacher);
-		if(i==0){
+		int i = courseService.insertCourseRelationAndClassesCourse(Integer.parseInt(course), Integer.parseInt(classes),  Integer.parseInt(major),  Integer.parseInt(teacher));
+		if(i==1){
 			is_exist = "1";
 		}else{
 			is_exist = "0";

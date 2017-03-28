@@ -152,19 +152,35 @@
 		AND tcc.teacher_id = #{teacher_id,jdbcType=INTEGER};
 	</select>
 
-	<select id="selectEvaluateByCourse" resultType="cn.it.entity.vo.EvaluateVO"
+<!-- 	<select id="selectEvaluateByCourse" resultType="cn.it.entity.vo.EvaluateVO"
 		parameterType="java.lang.Integer">
 		SELECT
-		te.evaluate_text evaluateText,te.evaluate_score evaluateScore
+			a.courseId,
+			a.courseName,
+			a.teacherName,
+			te.evaluate_score evaluateScore,
+			te.evaluate_text evaluateText
 		FROM
-		t_evaluate te,
-		t_classes_course tcc,
-		t_course tc
-		WHERE
-		te.class_course_id = tcc.id
-		AND tcc.course_id = tc.id
-		AND tc.id = #{course_id,jdbcType=INTEGER};
-	</select>
+			(
+				SELECT DISTINCT
+					(tcd.course_id) courseId,
+					tc.course_name courseName,
+					tt.teacher_name teacherName
+				FROM
+					t_course_detail tcd,
+					t_course tc,
+					t_teacher tt
+				WHERE
+					tcd.course_id = tc.id
+				AND
+					tcd.teacher_id = tt.id
+				AND
+					tcd.teacher_id = 28
+				AND
+					tcd.course_id = 11
+			) a
+		LEFT JOIN t_evaluate te ON te.course_id = a.courseId
+	</select> -->
 
 	<delete id="deleteList">
 		delete from t_teacher where id in

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 
 import cn.it.entity.Evaluate;
+import cn.it.entity.model.EvaluatePO;
 import cn.it.entity.vo.EvaluateVO;
 import cn.it.service.EvaluateService;
 
@@ -21,9 +22,9 @@ public class EvaluateServiceImpl extends BaseServiceImpl<Evaluate> implements Ev
 	}
 
 	@Override
-	public List<EvaluateVO> selectEvaluateToTeacher(int teacher_id) {
+	public List<EvaluateVO> selectEvaluateToTeacher(EvaluatePO evaluatePO) {
 		// TODO Auto-generated method stub
-		return evaluateMapper.selectEvaluateToTeacher(teacher_id);
+		return evaluateMapper.selectEvaluateToTeacher(evaluatePO);
 	}
 
 	

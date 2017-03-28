@@ -1,6 +1,7 @@
 package cn.it.action;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.it.entity.Classes;
-import cn.it.entity.ClassesCourse;
 import cn.it.entity.Course;
 import cn.it.entity.Score;
 import cn.it.entity.Student;
@@ -145,45 +145,9 @@ public class ScoreAction extends BaseAction {
 	@RequestMapping("/addScore")
 	public String addScore(HttpServletRequest request){
 		Teacher teacher = (Teacher) request.getSession().getAttribute("loginUser");
-		ClassesCourse classesCourse = new ClassesCourse();
-		classesCourse.setTeacherId(teacher.getId());
-		List<ClassesCourse> classesCourseList = (List<ClassesCourse>) classesCourseService.selectList(classesCourse);
-		
-		Course course = new Course();
-		List<Course> courselList = (List<Course>) courseService.selectList(course);
-		
-		if(classesCourseList.size()>0&&courselList.size()>0){
-			for (int j = 0; j < courselList.size(); j++) {
-				for (int i = 0; i < classesCourseList.size(); i++) {
-					if(classesCourseList.get(i).getCourseId().equals(courselList.get(j).getId())){
-						break;
-					}else{
-						if(i==classesCourseList.size()-1){
-							courselList.remove(j);
-							j--;
-							//if(j<0)j=0;
-						}
-					}
-				}
-			}
-		}
-		request.setAttribute("courselList", courselList);
-		Student student = new Student();
-		List<Student> studentList = (List<Student>) studentService.selectList(student);
-		if(classesCourseList.size()>0&&studentList.size()>0){
-			for (int j = 0; j < studentList.size(); j++) {
-				for (int i = 0; i < classesCourseList.size(); i++) {
-					if(classesCourseList.get(i).getClassesId().equals(studentList.get(j).getClassId())){
-						break;
-					}else{
-						if(i==classesCourseList.size()-1){
-							studentList.remove(j);
-							j--;
-						}
-					}
-				}
-			}
-		}
+		List<Student> studentList = studentService.selectStudentByTeacherId(teacher.getId());
+		List<Course> courseList = studentService.selectCourseByTeacherId(teacher.getId());
+		request.setAttribute("courselList", courseList);
 		request.setAttribute("studentList", studentList);
 		return "forward:/WEB-INF/jsp/teacher/appendScore.jsp";
 	}
@@ -226,40 +190,35 @@ public class ScoreAction extends BaseAction {
 		response.setCharacterEncoding("utf-8");
 		
 		Teacher teacher = (Teacher) request.getSession().getAttribute("loginUser");
-		ClassesCourse classesCourse = new ClassesCourse();
-		classesCourse.setTeacherId(teacher.getId());
-		List<ClassesCourse> classesCourseList = (List<ClassesCourse>) classesCourseService.selectList(classesCourse);
-		
+		List<Student> studentList = studentService.selectStudentByTeacherId(teacher.getId());
 		Score score = new Score();
 		List<Score> list = (List<Score>) scoreService.selectList(score);
-		if(classesCourseList.size()>0&&list.size()>0){
-			for (int j = 0; j < list.size(); j++) {
-				for (int i = 0; i < classesCourseList.size(); i++) {
-					if(classesCourseList.get(i).getCourseId().equals(list.get(j).getCourseId())){
-						break;
-					}else{
-						if(i==classesCourseList.size()-1){
-							list.remove(j);
-							j--;
-							//if(j<0)j=0;
-						}
-					}
+		List<Score> resultList = new ArrayList<Score>();
+		for(int i=0;i<list.size();i++){
+			for(int j=0;j<studentList.size();j++){
+				System.out.println(studentList.get(j).getId()+"  "+list.get(i).getStudentId());
+				if(studentList.get(j).getId().equals(list.get(i).getStudentId())){
+					resultList.add(list.get(i));
+					break;
 				}
 			}
 		}
-		for (int i = 0; i < list.size(); i++) {
-			Student student = studentService.select(list.get(i).getStudentId());
-			list.get(i).setStudentNo(student.getStudentNo());
-			list.get(i).setStudentName(student.getStudentName());
-			Classes classes = classesService.select(student.getClassId());
-			list.get(i).setClassesName(classes.getClassName());
-			Course course = courseService.select(list.get(i).getCourseId());
-			list.get(i).setCourseName(course.getCourseName());
+
+		if(resultList.size()>0 && resultList!=null){
+			for (int i = 0; i < resultList.size(); i++) {
+				Student student = studentService.select(resultList.get(i).getStudentId());
+				resultList.get(i).setStudentNo(student.getStudentNo());
+				resultList.get(i).setStudentName(student.getStudentName());
+				Classes classes = classesService.select(student.getClassId());
+				resultList.get(i).setClassesName(classes.getClassName());
+				Course course = courseService.select(resultList.get(i).getCourseId());
+				resultList.get(i).setCourseName(course.getCourseName());
+			}
+			JSONArray jsonArray = new JSONArray().fromObject(resultList);
+			System.out.println(resultList.toString());
+			PrintWriter writer = response.getWriter();
+			writer.print(jsonArray);
 		}
-		JSONArray jsonArray = new JSONArray().fromObject(list);
-		System.out.println(list.toString());
-		PrintWriter writer = response.getWriter();
-		writer.print(jsonArray);
 	}
 
 	

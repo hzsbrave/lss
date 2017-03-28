@@ -15,8 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,11 +29,13 @@ import cn.it.entity.Course;
 import cn.it.entity.Major;
 import cn.it.entity.Params;
 import cn.it.entity.Teacher;
+import cn.it.entity.model.EvaluatePO;
 import cn.it.entity.vo.EvaluateVO;
 import cn.it.entity.vo.TeacherVO;
 import cn.it.service.AcademyService;
 import cn.it.service.ClassesCourseService;
 import cn.it.service.ClassesService;
+import cn.it.service.CourseRelationService;
 import cn.it.service.CourseService;
 import cn.it.service.EvaluateService;
 import cn.it.service.MajorService;
@@ -61,14 +62,27 @@ public class TeacherAction extends BaseAction {
 	private MajorService majorService;
 	@Resource
 	private ClassesService claseesService;
+	@Autowired
+	private CourseRelationService courseRelationService;
 	
 	
 	@RequestMapping("/listAnalysisDetail")
 	@ResponseBody
 	public void listAnalysisDetail(HttpServletRequest request,HttpServletResponse response) throws IOException{
 		response.setCharacterEncoding("utf-8");
-		String course_id = request.getParameter("course_id");
-		List<EvaluateVO> list = teacherService.selectEvaluateByCourse(Integer.parseInt(course_id));
+		int teacherId = Integer.parseInt(request.getParameter("teacher_id"));
+		int courseId = Integer.parseInt(request.getParameter("course_id"));
+		EvaluatePO e = new EvaluatePO();
+		e.setTeacherId(teacherId);
+		e.setCourseId(courseId);
+		List<EvaluateVO> list = evaluateService.selectEvaluateToTeacher(e);
+		if(list.size()>0&&list!=null){
+			for(int i=0;i<list.size();i++){
+				if(list.get(i).getEvaluateScore()==null||list.get(i).getEvaluateText()==null){
+					list.remove(i);
+				}
+			}
+		}
 		JSONArray jsonArray = new JSONArray().fromObject(list);
 		PrintWriter writer = response.getWriter();
 		writer.print(jsonArray);
@@ -77,7 +91,7 @@ public class TeacherAction extends BaseAction {
 	@RequestMapping("/analysisDetail")
 	public ModelAndView analysisDetail(HttpServletRequest request){
 		String teacher_id = request.getParameter("teacher_id");
-		List<EvaluateVO> list = teacherService.selectCourseByTeacher(Integer.parseInt(teacher_id));
+		List<Course> list = courseRelationService.selectCourseByTeacherId(Integer.parseInt(teacher_id));
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("list",list);
 		mv.setViewName("forward:/WEB-INF/jsp/teacher/analysisDetail.jsp");
@@ -86,7 +100,9 @@ public class TeacherAction extends BaseAction {
 	
 	@RequestMapping("/analysis")
 	public ModelAndView analysis(HttpServletRequest request){
-		List<EvaluateVO> list = evaluateService.selectEvaluateToTeacher(Integer.parseInt(request.getParameter("teacher_id")));
+		EvaluatePO e = new EvaluatePO();
+		e.setTeacherId(Integer.parseInt(request.getParameter("teacher_id")));
+		List<EvaluateVO> list = evaluateService.selectEvaluateToTeacher(e);
 		int level1 = 0;
 		int level2 = 0;
 		int level3 = 0;
@@ -94,17 +110,21 @@ public class TeacherAction extends BaseAction {
 		int level5 = 0;
 		if(list!=null&&list.size()>0){
 			for(int i=0;i<list.size();i++){
-				if(list.get(i).getEvaluateScore()>=90&&list.get(i).getEvaluateScore()<=100){
-					level1++;
-				}else if(list.get(i).getEvaluateScore()>=80&&list.get(i).getEvaluateScore()<=90){
-					level2++;
-				}else if(list.get(i).getEvaluateScore()>=70&&list.get(i).getEvaluateScore()<=80){
-					level3++;
-				}else if(list.get(i).getEvaluateScore()>=60&&list.get(i).getEvaluateScore()<=70){
-					level4++;
+				if(list.get(i).getEvaluateScore()==null||list.get(i).getEvaluateScore()==null){
+					
 				}else{
-					level5++;
-				}
+					if(list.get(i).getEvaluateScore()>=90&&list.get(i).getEvaluateScore()<=100){
+						level1++;
+					}else if(list.get(i).getEvaluateScore()>=80&&list.get(i).getEvaluateScore()<=90){
+						level2++;
+					}else if(list.get(i).getEvaluateScore()>=70&&list.get(i).getEvaluateScore()<=80){
+						level3++;
+					}else if(list.get(i).getEvaluateScore()>=60&&list.get(i).getEvaluateScore()<=70){
+						level4++;
+					}else{
+						level5++;
+					}
+				}	
 			}
 		}
 		ModelAndView mv = new ModelAndView();
@@ -363,9 +383,9 @@ public class TeacherAction extends BaseAction {
 	//学生信息
 	@RequestMapping("/studentInfor")
 	public String studentInfor(HttpServletRequest request){
-		Classes classes = new Classes();
+		/*Classes classes = new Classes();
 		List<Classes> classesList = (List<Classes>) classesService.selectList(classes);
-		request.setAttribute("classesList", classesList);
+		request.setAttribute("classesList", classesList);*/
 		return "forward:/WEB-INF/jsp/teacher/student.jsp";
 	}
 	

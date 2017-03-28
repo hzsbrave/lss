@@ -53,7 +53,7 @@ thead>tr>th:nth-child(3), tbody>tr>td:nth-child(3) {
        		 <label for="course">课程：</label>
 				<select class="form-control" id="course" name="course" onchange="change(this)">
 					<c:forEach items="${list}" var="course">
-						<option value="${course.courseId }">${course.courseName }</option>
+						<option value="${course.id }">${course.courseName }</option>
 					</c:forEach>
 				</select>
 				</div>
@@ -78,7 +78,7 @@ thead>tr>th:nth-child(3), tbody>tr>td:nth-child(3) {
             </section>	
         </section>
 	</section>
-	
+	<input id="teacherId" value="${loginUser.id}" hidden/>
 	<script src="<%=basePath%>common/js/jquery-1.11.1.min.js"></script>
 	<script src="<%=basePath%>common/js/bootstrap.min.js"></script>
 	<script src="<%=basePath%>common/js/bootstrap-table.js"></script>

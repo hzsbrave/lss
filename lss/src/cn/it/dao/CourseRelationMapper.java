@@ -1,7 +1,11 @@
 package cn.it.dao;
 
+import cn.it.entity.Course;
 import cn.it.entity.CourseRelation;
 import cn.it.entity.CourseRelationExample;
+import cn.it.entity.Student;
+
+
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,4 +33,9 @@ public interface CourseRelationMapper {
     int updateByPrimaryKey(CourseRelation record);
     
     public long addCourseRelationList(List<CourseRelation> list);
+    
+    public List<Student> selectStudentByTeacherId(Integer teacher_id);
+    
+    public List<Course> selectCourseByTeacherId(Integer teacher_id);
+    
 }

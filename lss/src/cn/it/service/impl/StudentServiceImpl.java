@@ -5,6 +5,9 @@ import java.util.List;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import cn.it.dao.CourseRelationMapper;
+import cn.it.entity.Course;
 import cn.it.entity.Evaluate;
 import cn.it.entity.Student;
 import cn.it.entity.vo.EvaluateVO;
@@ -17,7 +20,8 @@ import cn.it.solrdao.StudentDao;
 public class StudentServiceImpl extends BaseServiceImpl<Student> implements StudentService {
 	@Autowired
 	private StudentDao studentDao;
-	
+	@Autowired
+	private CourseRelationMapper courseRelationMapper;
 	@Override
 	public Student selectStudent(Student student) {
 		return studentMapper.selectStudent(student);
@@ -109,6 +113,18 @@ public class StudentServiceImpl extends BaseServiceImpl<Student> implements Stud
 		studentSolrVO.setCurPage(page);
 
 		return studentSolrVO;
+	}
+
+	@Override
+	public List<Student> selectStudentByTeacherId(Integer teacher_id) {
+		// TODO Auto-generated method stub
+		return courseRelationMapper.selectStudentByTeacherId(teacher_id);
+	}
+
+	@Override
+	public List<Course> selectCourseByTeacherId(Integer teacher_id) {
+		// TODO Auto-generated method stub
+		return courseRelationMapper.selectCourseByTeacherId(teacher_id);
 	}
 
 }

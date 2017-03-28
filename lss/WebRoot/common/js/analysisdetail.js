@@ -8,6 +8,7 @@
         });
     });
 	var course_id = $('#course').val();
+	var teacher_id = $('#teacherId').val();
     $(function(){
     	init();
     });
@@ -16,7 +17,7 @@
     	$("#table").bootstrapTable({
     		   toggle:"table",//不用写 JavaScript 直接启用表格。
     		   cache: true,//False to disable caching of AJAX requests.
-               url:$('#hidden').val()+"/teacher/listAnalysisDetail.action?course_id="+course_id,
+               url:$('#hidden').val()+"/teacher/listAnalysisDetail.action?course_id="+course_id+"&teacher_id="+teacher_id,
                showColumns:false,//True to show the columns drop down list.
                search:false,//显示搜索框
                showRefresh:false,//显示刷新按钮
@@ -39,7 +40,7 @@
     }
 	
     function change(obj){
-    	  $("#table").bootstrapTable('refresh',{url: $('#hidden').val()+'/teacher/listAnalysisDetail.action?course_id='+$(obj).val()});
+    	  $("#table").bootstrapTable('refresh',{url: $('#hidden').val()+'/teacher/listAnalysisDetail.action?course_id='+$(obj).val()+"&teacher_id="+teacher_id});
     }
     
 	$(function () {

@@ -3,6 +3,7 @@ package cn.it.dao;
 import cn.it.entity.Evaluate;
 import cn.it.entity.EvaluateExample;
 import cn.it.entity.Teacher;
+import cn.it.entity.model.EvaluatePO;
 import cn.it.entity.vo.EvaluateVO;
 
 import java.util.List;
@@ -31,5 +32,5 @@ public interface EvaluateMapper extends BaseMapper<Evaluate>{
 
     int updateByPrimaryKey(Evaluate record);
     
-    List<EvaluateVO> selectEvaluateToTeacher(int teacher_id);
+    List<EvaluateVO> selectEvaluateToTeacher(EvaluatePO evaluatePO);
 }

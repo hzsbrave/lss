@@ -87,7 +87,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
         </aside>
        <section class="main-content">
        		<input id="hidden" value="${lssPath}" hidden/>
-        	<input id="studentno" value="${loginUser.studentNo}" hidden/>
         	<input id="userid" value="${loginUser.id}" hidden/>
             <section class="wrapper">
             	<div class="container">

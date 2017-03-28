@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.it.entity.Course;
+import cn.it.entity.CourseRelation;
 import cn.it.entity.Major;
 import cn.it.entity.Params;
 import cn.it.entity.Room;
@@ -21,7 +22,7 @@ public interface CourseService extends BaseService<Course> {
 	public Map addClassCourse();
 	public Map addClassCourseChange(String major_id);
 	public Map addClassCourse2();
-	public int insertClassesCourse(String classes,String course,String major,String teacher);
+	//public int insertClassesCourse(String classes,String course,String major,String teacher);
 	public ClassesCourseVO getClassesCourse(Params params);
 	public int updateClassesCourse(String id,String hours,String courseId,String classesId,String majorId,String teacherId);
 	public Map insert(String courseName,String needHours,String majorId,String credit,String type,String startWeek,String endWeek,String text,String teacherId,String all_sectionArray,String single_sectionArray,Course course);
@@ -34,4 +35,5 @@ public interface CourseService extends BaseService<Course> {
 	public List<MyCourseVO> appGetMyCourseByTime(String student_id,String flag,String week_id,String day_id);
 	public List<MyCourseVO> appGetAllCourse(String type);
 	public boolean appCheckMySelectCourse(String student_id,String course_id);
+	public int insertCourseRelationAndClassesCourse(Integer course_id,Integer class_id,Integer major_id,Integer teacher_id);
 }

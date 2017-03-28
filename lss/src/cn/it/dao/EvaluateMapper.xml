@@ -3,10 +3,11 @@
 <mapper namespace="cn.it.dao.EvaluateMapper" >
   <resultMap id="BaseResultMap" type="cn.it.entity.Evaluate" >
     <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="student_id" property="studentId" jdbcType="VARCHAR" />
+    <result column="student_id" property="studentId" jdbcType="INTEGER" />
     <result column="evaluate_score" property="evaluateScore" jdbcType="INTEGER" />
     <result column="evaluate_text" property="evaluateText" jdbcType="VARCHAR" />
     <result column="class_course_id" property="classCourseId" jdbcType="INTEGER" />
+    <result column="course_id" property="courseId" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -67,7 +68,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, student_id, evaluate_score, evaluate_text, class_course_id
+    id, student_id, evaluate_score, evaluate_text, class_course_id, course_id
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="cn.it.entity.EvaluateExample" >
     select
@@ -89,20 +90,36 @@
     from t_evaluate
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectEvaluateToTeacher" resultType="cn.it.entity.vo.EvaluateVO" parameterType="java.lang.Integer" >
-    SELECT
+  <select id="selectEvaluateToTeacher" resultType="cn.it.entity.vo.EvaluateVO" parameterType="cn.it.entity.model.EvaluatePO" >
+	SELECT
+		a.courseId,
+		a.courseName,
+		a.teacherName,
 		te.evaluate_score evaluateScore,
-		te.evaluate_text evaluateText,
-		tc.course_name courseName
+		te.evaluate_text evaluateText
 	FROM
-		t_evaluate te,
-		t_classes_course tcc,
-		t_course tc
-	WHERE
-		te.class_course_id = tcc.id
-		AND tcc.course_id = tc.id
-		AND tcc.teacher_id = #{teacherId,jdbcType=INTEGER}
-  </select>
+		(
+			SELECT DISTINCT
+				(tcd.course_id) courseId,
+				tc.course_name courseName,
+				tt.teacher_name teacherName
+			FROM
+				t_course_detail tcd,
+				t_course tc,
+				t_teacher tt
+			WHERE
+				tcd.course_id = tc.id
+			AND
+				tcd.teacher_id = tt.id
+			AND
+				tcd.teacher_id = #{teacherId,jdbcType=INTEGER}
+			<if test="courseId != null">
+			AND
+				tcd.course_id = #{courseId,jdbcType=INTEGER}
+			</if>
+		) a
+	LEFT JOIN t_evaluate te ON te.course_id = a.courseId
+  </select> 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from t_evaluate
     where id = #{id,jdbcType=INTEGER}
@@ -115,9 +132,9 @@
   </delete>
   <insert id="insert" parameterType="cn.it.entity.Evaluate" >
     insert into t_evaluate (id, student_id, evaluate_score, 
-      evaluate_text, class_course_id)
-    values (#{id,jdbcType=INTEGER}, #{studentId,jdbcType=VARCHAR}, #{evaluateScore,jdbcType=INTEGER}, 
-      #{evaluateText,jdbcType=VARCHAR}, #{classCourseId,jdbcType=INTEGER})
+      evaluate_text, class_course_id, course_id)
+    values (#{id,jdbcType=INTEGER}, #{studentId,jdbcType=INTEGER}, #{evaluateScore,jdbcType=INTEGER}, 
+      #{evaluateText,jdbcType=VARCHAR}, #{classCourseId,jdbcType=INTEGER}, #{courseId,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="cn.it.entity.Evaluate" >
     insert into t_evaluate
@@ -137,13 +154,16 @@
       <if test="classCourseId != null" >
         class_course_id,
       </if>
+      <if test="courseId != null" >
+       	course_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         #{id,jdbcType=INTEGER},
       </if>
       <if test="studentId != null" >
-        #{studentId,jdbcType=VARCHAR},
+        #{studentId,jdbcType=INTEGER},
       </if>
       <if test="evaluateScore != null" >
         #{evaluateScore,jdbcType=INTEGER},
@@ -153,6 +173,9 @@
       </if>
       <if test="classCourseId != null" >
         #{classCourseId,jdbcType=INTEGER},
+      </if>
+      <if test="courseId != null" >
+        #{courseId,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -169,7 +192,7 @@
         id = #{record.id,jdbcType=INTEGER},
       </if>
       <if test="record.studentId != null" >
-        student_id = #{record.studentId,jdbcType=VARCHAR},
+        student_id = #{record.studentId,jdbcType=INTEGER},
       </if>
       <if test="record.evaluateScore != null" >
         evaluate_score = #{record.evaluateScore,jdbcType=INTEGER},
@@ -180,6 +203,9 @@
       <if test="record.classCourseId != null" >
         class_course_id = #{record.classCourseId,jdbcType=INTEGER},
       </if>
+      <if test="record.courseId != null" >
+        course_id = #{record.courseId,jdbcType=INTEGER},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -188,10 +214,11 @@
   <update id="updateByExample" parameterType="map" >
     update t_evaluate
     set id = #{record.id,jdbcType=INTEGER},
-      student_id = #{record.studentId,jdbcType=VARCHAR},
+      student_id = #{record.studentId,jdbcType=INTEGER},
       evaluate_score = #{record.evaluateScore,jdbcType=INTEGER},
       evaluate_text = #{record.evaluateText,jdbcType=VARCHAR},
-      class_course_id = #{record.classCourseId,jdbcType=INTEGER}
+      class_course_id = #{record.classCourseId,jdbcType=INTEGER},
+      course_id = #{record.courseId,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -200,7 +227,7 @@
     update t_evaluate
     <set >
       <if test="studentId != null" >
-        student_id = #{studentId,jdbcType=VARCHAR},
+        student_id = #{studentId,jdbcType=INTEGER},
       </if>
       <if test="evaluateScore != null" >
         evaluate_score = #{evaluateScore,jdbcType=INTEGER},
@@ -211,15 +238,19 @@
       <if test="classCourseId != null" >
         class_course_id = #{classCourseId,jdbcType=INTEGER},
       </if>
+      <if test="courseId != null" >
+        course_id = #{courseId,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="cn.it.entity.Evaluate" >
     update t_evaluate
-    set student_id = #{studentId,jdbcType=VARCHAR},
+    set student_id = #{studentId,jdbcType=INTEGER},
       evaluate_score = #{evaluateScore,jdbcType=INTEGER},
       evaluate_text = #{evaluateText,jdbcType=VARCHAR},
-      class_course_id = #{classCourseId,jdbcType=INTEGER}
+      class_course_id = #{classCourseId,jdbcType=INTEGER},
+      course_id = #{courseId,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

@@ -3,15 +3,25 @@ package cn.it.entity;
 public class Evaluate {
     private Integer id;
 
-    private String studentId;
+    private Integer studentId;
 
     private Integer evaluateScore;
 
     private String evaluateText;
 
     private Integer classCourseId;
+    
+    private Integer courseId;
 
-    public Integer getId() {
+    public Integer getCourseId() {
+		return courseId;
+	}
+
+	public void setCourseId(Integer courseId) {
+		this.courseId = courseId;
+	}
+
+	public Integer getId() {
         return id;
     }
 
@@ -19,15 +29,15 @@ public class Evaluate {
         this.id = id;
     }
 
-    public String getStudentId() {
-        return studentId;
-    }
+    public Integer getStudentId() {
+		return studentId;
+	}
 
-    public void setStudentId(String studentId) {
-        this.studentId = studentId == null ? null : studentId.trim();
-    }
+	public void setStudentId(Integer studentId) {
+		this.studentId = studentId;
+	}
 
-    public Integer getEvaluateScore() {
+	public Integer getEvaluateScore() {
         return evaluateScore;
     }
 
@@ -54,7 +64,8 @@ public class Evaluate {
 	@Override
 	public String toString() {
 		return "Evaluate [id=" + id + ", studentId=" + studentId + ", evaluateScore=" + evaluateScore
-				+ ", evaluateText=" + evaluateText + ", classCourseId=" + classCourseId + "]";
+				+ ", evaluateText=" + evaluateText + ", classCourseId=" + classCourseId + ", courseId=" + courseId
+				+ "]";
 	}
     
 }

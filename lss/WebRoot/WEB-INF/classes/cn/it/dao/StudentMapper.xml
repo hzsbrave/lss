@@ -65,7 +65,15 @@
 		<include refid="Base_Column_List" />
 		from t_student
 	</select>
-
+	
+	<select id="selectStudentByClassId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_student
+		where class_id = #{class_id}
+	</select>
+	
 	<select id="selectStudentByNo" resultMap="BaseResultMap"
 		parameterType="java.lang.String">
 		select
@@ -164,34 +172,30 @@
 	<select id="selectEvaluate" resultType="cn.it.entity.vo.EvaluateVO"
 		parameterType="java.lang.Integer">
 		SELECT
-		a.classCourseId,a.courseName,a.teacherName,te.evaluate_score
-		evaluateScore,te.evaluate_text evaluateText
+			a.courseId,
+			a.courseName,
+			a.teacherName,
+			te.evaluate_score evaluateScore,
+			te.evaluate_text evaluateText
 		FROM
-		(
-		SELECT
-		tcc.id
-		classCourseId,
-		tc.course_name courseName,
-		tt.teacher_name teacherName,
-		tcc.id tccid,
-		ts.student_no tsstuno
-		FROM
-		t_classes_course tcc,
-		t_student
-		ts,
-		t_course tc,
-		t_teacher tt
-		WHERE
-		ts.class_id = tcc.classes_id
-		AND tc.id
-		= tcc.course_id
-		AND tt.id = tcc.teacher_id
-		AND ts.id =
-		#{id,jdbcType=INTEGER}
-		) a
-		LEFT JOIN t_evaluate te ON a.tccid =
-		te.class_course_id
-		AND a.tsstuno = te.student_id
+			(
+				SELECT
+					DISTINCT(tc.id) courseId,
+					tc.course_name courseName,
+					tcr.student_id studentId,
+					tt.teacher_name teacherName
+				FROM
+					t_c_relationship tcr,
+					t_course tc,
+					t_course_detail tcd,
+					t_teacher tt
+				WHERE
+					tcr.student_id = #{studentId,jdbcType=INTEGER}
+				AND tcd.course_id = tc.id
+				AND tcr.course_detail_id = tcd.tcd_id
+				AND tt.id = tcd.teacher_id
+			) a
+		LEFT JOIN t_evaluate te ON te.student_id = a.studentId AND te.course_id = a.courseId
 	</select>
 
 	<select id="selectEvaluateBySidAndCid" resultType="cn.it.entity.Evaluate"
@@ -204,8 +208,8 @@
 		te.student_id =
 		#{studentId,jdbcType=VARCHAR}
 		and
-		te.class_course_id =
-		#{classCourseId,jdbcType=INTEGER}
+		te.course_id =
+		#{courseId,jdbcType=INTEGER}
 	</select>
 
 	<delete id="delete" parameterType="java.lang.Integer">
@@ -470,8 +474,8 @@
 				evaluate_text = #{evaluateText,jdbcType=VARCHAR},
 			</if>
 		</set>
-		where class_course_id = #{classCourseId,jdbcType=INTEGER} and
-		student_id = #{studentId,jdbcType=VARCHAR}
+		where course_id = #{courseId,jdbcType=INTEGER} and
+		student_id = #{studentId,jdbcType=INTEGER}
 	</update>
 
 	<update id="update" parameterType="cn.it.entity.Student">

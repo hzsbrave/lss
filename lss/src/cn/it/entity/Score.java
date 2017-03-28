@@ -96,6 +96,10 @@ public class Score {
 		this.studentName = studentName;
 	}
 
-	
-    
+	@Override
+	public String toString() {
+		return "Score [id=" + id + ", score=" + score + ", studentId=" + studentId + ", studentNo=" + studentNo
+				+ ", studentName=" + studentName + ", courseId=" + courseId + ", courseName=" + courseName
+				+ ", examDate=" + examDate + ", classesName=" + classesName + ", term=" + term + "]";
+	}
 }

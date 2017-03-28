@@ -44,6 +44,14 @@
     where course_id = #{courseId,jdbcType=INTEGER}
   </select>
   
+   <select id="selectClaCourseByCourseAndClass" resultMap="BaseResultMap" parameterType="cn.it.entity.ClassesCourse" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_classes_course
+    where course_id = #{courseId,jdbcType=INTEGER}
+    and classes_id = #{classesId,jdbcType=INTEGER}
+  </select>
+  
   <select id="selectList" resultMap="BaseResultMap" parameterType="classesCourse" >
     select 
     <include refid="Base_Column_List" />

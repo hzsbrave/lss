@@ -25,4 +25,6 @@ public interface StudentMapper extends BaseMapper<Student> {
 	public Evaluate selectEvaluateBySidAndCid(Evaluate evaluate);
 	
 	public List<Student> selectAllStudent();
+	
+	public List<Student> selectStudentByClassId(Integer class_id);
 }

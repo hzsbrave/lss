@@ -1,0 +1,12 @@
+/applicationContext-redis.xml
+/applicationContext-scheduler.xml
+/applicationContext-solr.xml
+/applicationContext.xml
+/cn/
+/generatorConfig.xml
+/log4j.properties
+/myBatis-config.xml
+/redis.properties
+/solr.properties
+/spring-mvc.xml
+/ssi.sql

@@ -9,6 +9,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.it.entity.*;
+import cn.it.service.*;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -17,18 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import cn.it.entity.Classes;
-import cn.it.entity.ClassesCourse;
-import cn.it.entity.Course;
-import cn.it.entity.Major;
-import cn.it.entity.Params;
-import cn.it.entity.Student;
 import cn.it.entity.vo.ClassesVO;
 import cn.it.entity.vo.StudentVO;
-import cn.it.service.ClassesCourseService;
-import cn.it.service.ClassesService;
-import cn.it.service.CourseService;
-import cn.it.service.MajorService;
 
 @Controller
 @RequestMapping(value="/class")
@@ -40,27 +32,53 @@ public class ClassAction extends BaseAction {
 	private MajorService majorService;
 	@Resource
 	private ClassesCourseService classesCourseService;
-	
+	@Resource
+	private AcademyService academyService;
 	@RequestMapping("/list")
 	public String list(HttpServletRequest request){
-		List<Major> majormyList = (List<Major>) majorService.selectList(new Major());
-		request.setAttribute("majormyList", majormyList);
+		/*List<Major> majormyList = (List<Major>) majorService.selectList(new Major());
+		request.setAttribute("majormyList", majormyList);*/
+		List<Academy> academyList =  (List<Academy>)  academyService.selectList(new Academy());
+		request.setAttribute("academyList", academyList);
 		return "forward:/WEB-INF/jsp/grade.jsp";
 	}
 	
 	@RequestMapping("/get")
 	@ResponseBody 
-	public ClassesVO get(HttpServletResponse response,@RequestBody Params params) throws Exception{
+	public ClassesVO get(HttpServletResponse response,HttpServletRequest request,@RequestBody Params params) throws Exception{
 		response.setCharacterEncoding("utf-8");
+		request.setCharacterEncoding("utf-8");
+
+		Integer academyId = null;
+		if(("undefined").equals(request.getParameter("academyId"))|| request.getParameter("academyId") == null){
+
+		}else{
+			academyId= Integer.parseInt(request.getParameter("academyId"));
+		}
+
+		String key = null;
+		if(("").equals(request.getParameter("key"))|| request.getParameter("key") == null){
+
+		}else{
+			key = request.getParameter("key");
+		}
+
 		Classes classes = new Classes();
 		classes.setPagedIndex((params.getPagedIndex()-1)*params.getPagedSize());
 		classes.setPagedSize(params.getPagedSize());
+		classes.setAcademyId(academyId);
+		classes.setKey(key);
 		List<Classes> list = (List<Classes>) classesService.selectListPage(classes);
 		for (int i = 0; i < list.size(); i++) {
 			Major major = majorService.select(list.get(i).getMajorId());
 			list.get(i).setMajorName(major.getMajorName());
 		}
-		int total = list.get(0).getTotal();
+		int total = 0;
+		if(list.size()==0 || list==null){
+
+		}else{
+			total = list.get(0).getTotal();
+		}
 		ClassesVO clavo = new ClassesVO();
 		clavo.setRows(list);
 		clavo.setTotal(total);

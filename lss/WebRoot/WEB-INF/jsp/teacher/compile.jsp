@@ -28,12 +28,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             <div class="collapse navbar-collapse">
                 <div class="dropdown">
                   <a class="dropdown-toggle user-info" type="button" id="profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    <span>${loginUser.teacherName }</span>
+                    <span>${loginUser_teacher.teacherName }</span>
                     <span class="caret"></span>
                   </a>
                   <ul class="dropdown-menu pull-right extended" aria-labelledby="profile">
                     <div class="log-arrow-up"></div>
-                    <li><a href="${proPath }/login/loginOut.action"><i class="glyphicon glyphicon-log-out"></i>退出</a></li>
+                    <li><a href="${proPath }/login/loginOut.action?flag=2"><i class="glyphicon glyphicon-log-out"></i>退出</a></li>
                   </ul>
                 </div>
             </div>
@@ -78,7 +78,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                         </a>
                     </li>
                     <li>
-                         <a href="${proPath }/teacher/analysis.action?teacher_id=${loginUser.id}">
+                         <a href="${proPath }/teacher/analysis.action?teacher_id=${loginUser_teacher.id}">
                             <i class="glyphicon glyphicon-pencil"></i>
                             <span>教学质量评价</span>
                         </a>
@@ -97,7 +97,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                    <ul class="list-group">
                                        <li class="list-group-item text-left">
                                             <span class="glyphicon glyphicon-user"></span>
-                                            ${loginUser.teacherName }
+                                            ${loginUser_teacher.teacherName }
                                        </li>
                                        <!-- 
                                        <li class="list-group-item">
@@ -110,13 +110,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                            <span class="pull-left">
                                                <strong>职工号</strong>
                                            </span>
-                                           <span>${loginUser.teacheNo }</span>
+                                           <span>${loginUser_teacher.teacheNo }</span>
                                        </li>
                                        <li class="list-group-item clearfix text-right">
                                            <span class="pull-left">
                                                <strong>入职时间</strong>
                                            </span>
-                                           <span><fmt:formatDate value="${loginUser.enterDate}" pattern="yyyy年MM月dd日" /></span>
+                                           <span><fmt:formatDate value="${loginUser_teacher.enterDate}" pattern="yyyy年MM月dd日" /></span>
                                        </li>
                                       
                                    </ul>
@@ -126,30 +126,30 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                    <hr />
                                    <form role="form" method="post" action="${proPath }/teacher/updateTeacher.action">
                                    <dl class="dl-horizontal-profile">
-                                   <input type="hidden" name="id" id="id" value="${loginUser.id }"/>
-                                     <dt>姓名</dt><dd><input type="text" id="teacherName" name="teacherName" value="${loginUser.teacherName }"/></dd>
+                                   <input type="hidden" name="id" id="id" value="${loginUser_teacher.id }"/>
+                                     <dt>姓名</dt><dd><input type="text" id="teacherName" name="teacherName" value="${loginUser_teacher.teacherName }"/></dd>
                                      <dt>性别</dt>
                                        <dd>
                                        		<select id="gender" name="gender">
-                                       			<option value="0" <c:if test="${loginUser.gender==0}">selected="selected"</c:if>>男</option>
-                                       			<option value="1" <c:if test="${loginUser.gender==1}">selected="selected"</c:if>>女</option>
+                                       			<option value="0" <c:if test="${loginUser_teacher.gender==0}">selected="selected"</c:if>>男</option>
+                                       			<option value="1" <c:if test="${loginUser_teacher.gender==1}">selected="selected"</c:if>>女</option>
                                        		</select>
                                        </dd>
-                                     <dt>籍贯</dt><dd><input type="text" id="natives" name="natives" value="${loginUser.natives }"/></dd>
-                                     <dt>民族</dt><dd><input type="text" id="national" name="national" value="${loginUser.national }"/></dd>
-                                     <dt>出生年月</dt><dd><input type="month" id="birthday" name="birthday" value='<fmt:formatDate value="${loginUser.birthday}" pattern="yyyy-MM" />'></dd>
-                                     <dt>联系方式</dt><dd><input type="text" id="phone" name="phone" value="${loginUser.phone }"/></dd>
-                                     <dt>家庭住址</dt><dd><input type="text" id="familyAddress" name="familyAddress" value="${loginUser.familyAddress }"/></dd>
-                                     <dt>现住址</dt><dd><input type="text" id="nowAddress" name="nowAddress" value="${loginUser.nowAddress }"/></dd>
-                                     <dt>身份证号</dt><dd><input type="text" id="idcard" name="idcard" value="${loginUser.idcard }"/></dd>
-                                     <dt>政治面貌</dt><dd><input type="text" id="political" name="political" value="${loginUser.political }"/></dd>
+                                     <dt>籍贯</dt><dd><input type="text" id="natives" name="natives" value="${loginUser_teacher.natives }"/></dd>
+                                     <dt>民族</dt><dd><input type="text" id="national" name="national" value="${loginUser_teacher.national }"/></dd>
+                                     <dt>出生年月</dt><dd><input type="month" id="birthday" name="birthday" value='<fmt:formatDate value="${loginUser_teacher.birthday}" pattern="yyyy-MM" />'></dd>
+                                     <dt>联系方式</dt><dd><input type="text" id="phone" name="phone" value="${loginUser_teacher.phone }"/></dd>
+                                     <dt>家庭住址</dt><dd><input type="text" id="familyAddress" name="familyAddress" value="${loginUser_teacher.familyAddress }"/></dd>
+                                     <dt>现住址</dt><dd><input type="text" id="nowAddress" name="nowAddress" value="${loginUser_teacher.nowAddress }"/></dd>
+                                     <dt>身份证号</dt><dd><input type="text" id="idcard" name="idcard" value="${loginUser_teacher.idcard }"/></dd>
+                                     <dt>政治面貌</dt><dd><input type="text" id="political" name="political" value="${loginUser_teacher.political }"/></dd>
                                      <dt>学历</dt>
                                      <dd>
                                      	<select id="xueliId" name="xueliId">
-                                    		<option value="0" <c:if test="${loginUser.xueliId==0}">selected="selected"</c:if>>本科</option>
-                                     		<option value="1" <c:if test="${loginUser.xueliId==1}">selected="selected"</c:if>>硕士</option>
-                                     		<option value="2" <c:if test="${loginUser.xueliId==1}">selected="selected"</c:if>>教授</option>
-                                     		<option value="3" <c:if test="${loginUser.xueliId==1}">selected="selected"</c:if>>博士</option>
+                                    		<option value="0" <c:if test="${loginUser_teacher.xueliId==0}">selected="selected"</c:if>>本科</option>
+                                     		<option value="1" <c:if test="${loginUser_teacher.xueliId==1}">selected="selected"</c:if>>硕士</option>
+                                     		<option value="2" <c:if test="${loginUser_teacher.xueliId==1}">selected="selected"</c:if>>教授</option>
+                                     		<option value="3" <c:if test="${loginUser_teacher.xueliId==1}">selected="selected"</c:if>>博士</option>
                                      	</select>
                                      </dd>
                                      <dt></dt><dd><button class="btn btn-info" type="submit">提交</button></dd>

@@ -1,5 +1,5 @@
 $(function(){
-	var classname,major,grade,text,credit,type,startWeek,endWeek,issingle,teacherId;
+	var classname,major,grade,text,credit,type,startWeek,endWeek,issingle,teacherId,classesId;
 	$("#classSubmit").on("click",function(){
 		coursename      = $("#courseName").val();
 		majorid	   = $("#majorId").val();
@@ -10,6 +10,7 @@ $(function(){
 		startWeek = $('#week_select_begin').val();
 		endWeek = $('#week_select_end').val();
 		teacherId = $('#teacher').val();
+		classesId = $('#classesId').val();
 		var all_sectionArray = new Array();
 		var single_sectionArray = new Array();
 		var issingle = $('input[name=is_week]:checked').val();  //判断是否区分单双周 
@@ -101,7 +102,7 @@ $(function(){
 		else{
 			var url =  "&courseName="+coursename+"&majorId="+majorid+"&needHours="+needhours+"&all_sectionArray="+
 				JSON.stringify(all_sectionArray)+"&single_sectionArray="+JSON.stringify(single_sectionArray)+"&credit="+credit
-				+"&type="+type+"&startWeek="+startWeek+"&endWeek="+endWeek+"&text="+text+"&teacherId="+teacherId
+				+"&type="+type+"&startWeek="+startWeek+"&endWeek="+endWeek+"&text="+text+"&teacherId="+teacherId+"&classesId="+classesId
 			$.ajax({
 				type:"POST",
 				url:$('#hidden').val()+"/course/insert.action",
@@ -112,7 +113,7 @@ $(function(){
 					//alert("isExist:"+data)
 					if(data.isExist == 0){
 						alert("添加成功");
-						location.href = $('#hidden').val()+"/course/list.action";
+						location.href = $('#hidden').val()+"/course/classCourse.action";
 					}else{
 						alert("课程已存在");
 						location.href = $('#hidden').val()+"/course/add.action";
@@ -121,7 +122,7 @@ $(function(){
 				error:function(){
 					alert("添加失败");
 				}
-			});	
+			});
 		}
 	});
 });

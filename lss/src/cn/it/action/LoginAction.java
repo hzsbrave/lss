@@ -53,7 +53,7 @@ public class LoginAction extends BaseAction {
 			student.setPassword(pwd);
 			Student user = studentService.selectStudent(student);
 			if (user != null) {
-				session.setAttribute("loginUser", user);
+				session.setAttribute("loginUser_student", user);
 				System.out.println("------登录成功------");
 				return "forward:/WEB-INF/jsp/student/profile.jsp";
 			} else {
@@ -67,7 +67,7 @@ public class LoginAction extends BaseAction {
 			teacher.setPassword(pwd);
 			Teacher user = teacherService.selectTeacher(teacher);
 			if (user != null) {
-				session.setAttribute("loginUser", user);
+				session.setAttribute("loginUser_teacher", user);
 				System.out.println("------登录成功------");
 				return "forward:/WEB-INF/jsp/teacher/teacherProfile.jsp";
 			} else {
@@ -129,7 +129,14 @@ public class LoginAction extends BaseAction {
 
 	@RequestMapping(value = "/loginOut")
 	public String loginOut(HttpServletRequest request, HttpSession session) {
-		session.setAttribute("loginUser", null);
+		String flag = request.getParameter("flag");
+		if("1".equals(flag)){
+			session.setAttribute("loginUser_student", null);
+		}else if("2".equals(flag)){
+			session.setAttribute("loginUser_teacher", null);
+		}else{
+			session.setAttribute("loginUser", null);
+		}
 		return "forward:/login.jsp";
 	}
 

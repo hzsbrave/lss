@@ -66,7 +66,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                             <span class="glyphicon glyphicon-plus"></span>
                         </a>
                         <ul class="sec-menu" style="display:block;">
-                        	<li><a href="${proPath }/class/list.action" style="color:#FF6C60;"><i></i><span>班级信息</span></a></li>
+                            <li><a href="${proPath }/class/list.action"><i></i><span>班级信息</span></a></li>
                             <li><a href="${proPath }/class/add.action"><i></i><span>班级添加</span></a></li>
                         </ul>
                     </li>
@@ -77,9 +77,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                             <span class="glyphicon glyphicon-plus"></span>
                         </a>
                         <ul class="sec-menu">
-                        	<li><a href="${proPath }/course/list.action"><i></i><span>基本课程设置</span></a></li>
-                            <li><a href="${proPath }/course/classCourse.action"><i></i><span>班级课程信息</span></a></li>
-                            <li><a href="${proPath }/course/addClassCourse.action"><i></i><span>班级课程设置</span></a></li>
+                            <li><a href="${proPath }/course/add.action"><i></i><span>课程设置</span></a></li>
+                            <li><a href="${proPath }/course/classCourse.action"><i></i><span>课程信息</span></a></li>
                         </ul>
                     </li>
                     <li>
@@ -197,6 +196,71 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 </div><!-- /.modal -->
  <div class="modal-backdrop fade in"></div>
 <!--模态对话框-->
+
+    <!-- Modal for initSelectClass-->
+    <div class="modal fade" id="selectModel" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">请筛选：</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-2 control-label">所属学院：</label>
+                            <div class="col-sm-5">
+                                <select class="form-control" id="acamedy" name="academyId">
+                                    <c:forEach items="${academyList }" var="academy">
+                                        <option value="${academy.id }">${academy.academyName }</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">放弃筛选</button>
+                    <button type="button" class="btn btn-primary" id="mysubmit">筛选</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for searchTeacher-->
+    <div class="modal fade" id="searchModel" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel2">根据关键字筛选班级信息（课程ID、课程名、专业名、学院名）：</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-2 control-label">请输入：</label>
+                            <div class="col-sm-5">
+                                <input id="searchInput" name="searchKey" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">放弃筛选</button>
+                    <button type="button" class="btn btn-primary" id="submit2">筛选</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 	<script src="<%=basePath %>common/js/jquery-1.11.1.min.js"></script>
     <script src="<%=basePath %>common/js/bootstrap.min.js"></script>
     <script src="<%=basePath %>common/js/bootstrap-table.js"></script>
@@ -207,15 +271,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <script src="<%=basePath %>common/js/index.js"></script>
     <script src="<%=basePath %>common/js/classconfig.js"></script>
     <script>
-	  $(function(){
-		$(".guanbi,.close").click(function(){
-            	 $(".modal-backdrop").hide();
-		});
-		$("#trash").click(function(){
-			modal("#classModal",'danger');
-			$(".modal-footer > button:eq(1)").attr("class","btn btn-danger multidel");
-		});
-		/*
+	  $(function() {
+          $(".guanbi,.close").click(function () {
+              $(".modal-backdrop").hide();
+          });
+          $("#trash").click(function () {
+              modal("#classModal", 'danger');
+              $(".modal-footer > button:eq(1)").attr("class", "btn btn-danger multidel");
+          });
+          /*
 		$("#comfirm").on("click",function(){
 			$(".modal-backdrop").hide();
 			 var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
@@ -224,7 +288,34 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			console.log(ids);
 		});
 		*/
-	  });
+    });
+
+          $('#mysubmit').click(function(){
+              var acamedy = $('#acamedy').val();
+              $table.bootstrapTable('refresh', {
+                  url : $('#hidden').val()
+                  + '/class/get.action?academyId=' + acamedy
+              });
+              $("#selectModel").modal('hide');//手动隐藏模态框
+          });
+
+      function searchClass(){
+          $('#searchModel').modal({
+              show : true,
+              backdrop : true
+          })//手动显示模态框
+      }
+
+      $("#submit2").on(
+              "click",
+              function() {
+                  var key = $('#searchInput').val();
+                  $table.bootstrapTable('refresh', {
+                      url : $('#hidden').val()
+                      + '/class/get.action?key='+key
+                  });
+                  $("#searchModel").modal('hide');
+              });
     </script>
   </body>
 </html>

@@ -51,13 +51,27 @@
 	</select>
 
 	<select id="selectCourse" resultMap="BaseResultMap"
-		parameterType="course">
-		select
-		<include refid="Base_Column_List" />
-		from t_course a
-		where a.course_name = #{courseName,jdbcType=VARCHAR}
-		and a.major_id =
-		#{majorId,jdbcType=INTEGER}
+		parameterType="cn.it.entity.model.CoursePO">
+		SELECT
+			tc.id,
+			tc.course_name,
+			tc.create_date,
+			tc.major_id,
+			tc.need_hours
+		FROM
+			<if test="classesId != null">
+				t_classes_course tcc,
+			</if>
+			t_course tc
+		<where>
+			<if test="classesId != null">
+				tc.id = tcc.course_id
+				AND tcc.classes_id = #{classesId,jdbcType=INTEGER}
+			</if>
+			<if test="courseName != null">
+				AND tc.course_name = #{courseName,jdbcType=VARCHAR}
+			</if>
+		</where>
 	</select>
 
 	<select id="selectList" resultMap="BaseResultMap" parameterType="course">
@@ -245,6 +259,30 @@
 			tc.id = tcd.course_id
 		AND tt.id = tcd.teacher_id
 		AND tcd.type = #{type,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectFreeCourse" resultMap="MyCourseMap" parameterType="cn.it.entity.model.CoursePO">
+		SELECT
+		DISTINCT (tc.id),
+		tc.id,
+		tc.course_name,
+		tcd.course_id,
+		tcd.course_introduce,
+		tcd.credit,
+		tt.teacher_name
+		FROM
+		t_course tc,
+		t_course_detail tcd,
+		t_teacher tt
+		WHERE
+		tc.id = tcd.course_id
+		AND tt.id = tcd.teacher_id
+		<if test="type != null">
+			AND tcd.type = #{type,jdbcType=VARCHAR}
+		</if>
+		<if test="type == null">
+			AND tcd.type != 1
+		</if>
 	</select>
 	
 	<delete id="deleteList">

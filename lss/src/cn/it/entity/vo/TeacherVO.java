@@ -29,6 +29,6 @@ public class TeacherVO {
 	}
 	@Override
 	public String toString() {
-		return "TeacherVO [rows=" + rows + ", total=" + total + ", page=" + page + "]";
+		return "TeacherPO [rows=" + rows + ", total=" + total + ", page=" + page + "]";
 	}
 }

@@ -7,6 +7,9 @@ import cn.it.entity.Student;
 
 
 import java.util.List;
+
+import cn.it.entity.model.TeacherPO;
+import cn.it.entity.vo.CourseDetailVO;
 import org.apache.ibatis.annotations.Param;
 
 public interface CourseRelationMapper {
@@ -34,8 +37,8 @@ public interface CourseRelationMapper {
     
     public long addCourseRelationList(List<CourseRelation> list);
     
-    public List<Student> selectStudentByTeacherId(Integer teacher_id);
+    public List<Student> selectStudentByTeacherId(TeacherPO teacherPO);
     
-    public List<Course> selectCourseByTeacherId(Integer teacher_id);
+    public List<CourseDetailVO> selectCourseByTeacherId(Integer teacher_id);
     
 }

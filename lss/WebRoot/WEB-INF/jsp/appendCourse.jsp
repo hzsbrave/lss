@@ -139,10 +139,8 @@
 					class="glyphicon glyphicon-plus"></span>
 			</a>
 				<ul class="sec-menu" style="display: block;">
-					<li><a href="${proPath }/course/list.action"
-						style="color: #FF6C60;"><i></i><span>基本课程设置</span></a></li>
-					<li><a href="${proPath }/course/classCourse.action"><i></i><span>班级课程信息</span></a></li>
-					<li><a href="${proPath }/course/addClassCourse.action"><i></i><span>班级课程设置</span></a></li>
+					<li><a href="${proPath }/course/add.action" style="color:#FF6C60;"><i></i><span>课程设置</span></a></li>
+					<li><a href="${proPath }/course/classCourse.action"><i></i><span>课程信息</span></a></li>
 				</ul></li>
 			<li><a href="javascript:void(0);"> <i
 					class="glyphicon glyphicon-pencil"></i> <span>成绩管理</span> <span
@@ -198,7 +196,7 @@
 			<div class="col-sm-3 alert alert-danger"></div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-2 control-label" for="time">所需学时：</label>
+			<label class="col-sm-2 control-label" for="needHours">所需学时：</label>
 			<div class="col-sm-5">
 				<input class="form-control" id="needHours" type="text"
 					name="needHours">
@@ -206,7 +204,7 @@
 			<div class="col-sm-3 alert alert-danger"></div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-2 control-label" for="courseinfo">课程设置：</label>
+			<label class="col-sm-2 control-label" for="info">课程设置：</label>
 			<div class="col-sm-5">
 				<input class="form-control" id="info" type="text" name="courseinfo"
 					onclick="openModel()">
@@ -214,14 +212,14 @@
 			<div class="col-sm-3 alert alert-danger"></div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-2 control-label" for="courseintroduce">课程简介：</label>
+			<label class="col-sm-2 control-label" for="area">课程简介：</label>
 			<div class="col-sm-5">
 				<textarea id="area" name="courseintroduce"></textarea>
 			</div>
 			<div class="col-sm-3 alert alert-danger"></div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-2 control-label" for="credit">课程学分：</label>
+			<label class="col-sm-2 control-label" for="credit_select">课程学分：</label>
 			<div class="col-sm-5">
 				<select id="credit_select">
 					<option value="0.5">0.5</option>
@@ -234,7 +232,7 @@
 			<div class="col-sm-3 alert alert-danger"></div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-2 control-label" for="type">课程类型：</label>
+			<label class="col-sm-2 control-label" for="type_select">课程类型：</label>
 			<div class="col-sm-5">
 				<select id="type_select" onchange="onchangeType(this)">
 					<option value="1">学校安排的必修课程</option>
@@ -247,7 +245,7 @@
 			<div class="col-sm-3 alert alert-danger"></div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-2 control-label" for="adademy">所属学院：</label>
+			<label class="col-sm-2 control-label" for="acamedy">所属学院：</label>
 			<div class="col-sm-5">
 				<select class="form-control" id="acamedy" name="academy"
 					onchange="changeAdademy(this)">
@@ -259,13 +257,24 @@
 			<div class="col-sm-3 alert alert-danger"></div>
 		</div>
 		<div class="form-group" id="major_div">
-			<label class="col-md-2 col-sm-2 control-label" for="major">所属专业：</label>
+			<label class="col-md-2 col-sm-2 control-label" for="majorId">所属专业：</label>
 			<div class="col-sm-5">
-				<select class="form-control" id="majorId" name="majorId">
-					<option value="0">选修课，无专业</option>
+				<select class="form-control" id="majorId" name="majorId" onchange="changeMajor(this)">
 					<c:forEach items="${majorList }" var="major">
 						<option value="${major.id }">${major.majorName }</option>
 					</c:forEach>
+					<option value="0">选修课，无专业</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group" id="classes_div">
+			<label class="col-md-2 col-sm-2 control-label" for="classesId">所属班级：</label>
+			<div class="col-sm-5">
+				<select class="form-control" id="classesId" name="classesId">
+					<c:forEach items="${classesList }" var="classes">
+						<option value="${classes.id }">${classes.className }</option>
+					</c:forEach>
+					<option value="0">选修课，无班级</option>
 				</select>
 			</div>
 		</div>
@@ -573,9 +582,10 @@
 				return;
 			}
 			success = false;
-			var url = "&academyId=" + $(obj).val() + "&flag=1";
-			var appendOption = '<option value="0">选修课，无专业</option>';
+			var url = "&academyId=" + $(obj).val();
+			var appendOption = '';
 			var appendOption2 = '';
+			var appendOption3 = '';
 			$.ajax({
 						type : "POST",
 						url : $('#hidden').val() + "/course/add.action",
@@ -584,14 +594,16 @@
 						success : function(data) {
 							$("#majorId").empty();
 							$("#teacher").empty();
+							$("#classesId").empty();
 							if (data.majorList != null) {
 								for (var k = 0; k < data.majorList.length; k++) {
 									appendOption += '<option value='+data.majorList[k].id+'>'
 											+ data.majorList[k].majorName
 											+ '</option>';
 								}
-								$("#majorId").append(appendOption);
 							}
+							appendOption += '<option value="0">选修课，无专业</option>';
+							$("#majorId").append(appendOption);
 							if (data.teacherList != null) {
 								for (var p = 0; p < data.teacherList.length; p++) {
 									appendOption2 += '<option value='+data.teacherList[p].id+'>'
@@ -600,6 +612,15 @@
 								}
 								$("#teacher").append(appendOption2);
 							}
+							if (data.classesList != null) {
+								for (var u = 0; u < data.classesList.length; u++) {
+									appendOption3 += '<option value='+data.classesList[u].id+'>'
+											+ data.classesList[u].className
+											+ '</option>';
+								}
+							}
+							appendOption3 += '<option value="0">选修课，无班级</option>';
+							$("#classesId").append(appendOption3);
 							success = true;
 						},
 						error : function() {
@@ -641,6 +662,39 @@
 							success2 = true;
 						}
 					});
+		}
+
+		var success3 = true;
+		function changeMajor(obj) {
+			if (success3 == false) {
+				return;
+			}
+			success3 = false;
+			var url = "&majorId=" + $(obj).val();
+			var appendOption = '';
+			$.ajax({
+				type : "POST",
+				url : $('#hidden').val() + "/course/add.action",
+				dataType : "json",
+				data : url,
+				success : function(data) {
+					$("#classesId").empty();
+					if (data.classesList != null) {
+						for (var u = 0; u < data.classesList.length; u++) {
+							appendOption += '<option value='+data.classesList[u].id+'>'
+									+ data.classesList[u].className
+									+ '</option>';
+						}
+					}
+					appendOption += '<option value="0">选修课，无班级</option>';
+					$("#classesId").append(appendOption);
+					success3 = true;
+				},
+				error : function() {
+					alert("失败");
+					success3 = true;
+				}
+			});
 		}
 		
 		function onchangeType(obj){

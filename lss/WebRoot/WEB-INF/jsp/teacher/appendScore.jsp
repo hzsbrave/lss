@@ -62,7 +62,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                         </a>
                     </li>
                     <li>
-                        <a href="${proPath }/teacher/analysis.action?teacher_id=${loginUser.id}">
+                        <a href="${proPath }/teacher/analysis.action?teacher_id=${loginUser_teacher.id}">
                             <i class="glyphicon glyphicon-pencil"></i>
                             <span>教学质量评价</span>
                         </a>
@@ -75,27 +75,27 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
         	<section class="wrapper">
             	<form class="form-horizontal" role="form">
                    <div class="form-group">
-                      <label class="col-md-2 col-sm-2 control-label" for="classid">学生姓名：</label>
+                      <label class="col-md-2 col-sm-2 control-label" for="courseId">课程名称：</label>
                       <div class="col-sm-5">
-                         <select class="form-control" id="studentId" name="studentId">
-                         	<c:forEach items="${studentList }" var="student">
-                        	 <option value="${student.id }">${student.studentName }</option>
+                         <select class="form-control" id="courseId" name="courseId" onchange="onChangeCourse(this.value)">
+                         	<c:forEach items="${courseList }" var="course">
+                        	 <option value="${course.id }">${course.courseName }  ${course.className }</option>
                          	</c:forEach>
                           </select>
                      	</div>
                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 col-sm-2 control-label" for="studentId">学生姓名：</label>
+                        <div class="col-sm-5">
+                            <select class="form-control" id="studentId" name="studentId">
+                                <c:forEach items="${studentList }" var="student">
+                                    <option value="${student.id }">${student.studentName }</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
                    <div class="form-group">
-                      <label class="col-md-2 col-sm-2 control-label" for="classid">课程：</label>
-                      <div class="col-sm-5">
-                         <select class="form-control" id="courseId" name="courseId">
-                         	<c:forEach items="${courselList }" var="course">
-                        	 <option value="${course.id }">${course.courseName }</option>
-                         	</c:forEach>
-                          </select>
-                     	</div>
-                   </div>
-                   <div class="form-group">
-                      <label class="col-sm-2 control-label" for="grade">成绩：</label>
+                      <label class="col-sm-2 control-label" for="score">成绩：</label>
                       <div class="col-sm-5">
                          <input class="form-control" id="score" name="score" type="text" >
                       </div>
@@ -121,7 +121,6 @@ $(function(){
 		studentId    = $("#studentId").val();
 		courseId	  = $("#courseId").val();
 		score        = $("#score").val();
-		//alert(oldpwd+"*"+newpwd+"*"+id);
 			var url =  "&studentId="+studentId+"&courseId="+courseId+"&score="+score
 			$.ajax({
 				type:"POST",
@@ -143,6 +142,33 @@ $(function(){
 			});	
 	});	
 });
+
+    function onChangeCourse(id){
+        var url = "&courseId="+id;
+        $.ajax({
+            type:"POST",
+            url:$('#hidden').val()+"/score/addScore.action",
+            dataType:"json",
+            data:url,
+            success: function(data){
+                // alert(JSON.stringify(data));
+                if(data != undefined && data.length>0){
+                    $("#studentId").empty();
+                    var appendOption = "";
+                    var studentList = data;
+                    for(var j=0;j<studentList.length;j++){
+                        appendOption += '<option value='+studentList[j].id+'>'+studentList[j].studentName+'</option>';
+                    }
+                    $("#studentId").append(appendOption);
+                }else{
+                    $("#studentId").empty();
+                }
+            },
+            error:function(){
+                alert("获取失败");
+            }
+        });
+    }
 </script>
 </body>
 </html>

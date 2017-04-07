@@ -8,12 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.it.dao.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import cn.it.dao.BuildingRoomMapper;
-import cn.it.dao.ClassesCourseMapper;
-import cn.it.dao.CourseDetailMapper;
-import cn.it.dao.CourseRelationMapper;
 import cn.it.entity.Academy;
 import cn.it.entity.Building;
 import cn.it.entity.BuildingRoom;
@@ -39,6 +36,7 @@ import cn.it.entity.vo.WeekVO;
 import cn.it.service.CourseService;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Service("courseService")
 public class CourseServiceImpl extends BaseServiceImpl<Course> implements CourseService {
@@ -50,11 +48,51 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 	private CourseRelationMapper courseRelationMapper;
 	@Autowired
 	private ClassesCourseMapper classesCourseMapper;
+	@Autowired
+	private AcademyMapper academyMapper;
+	@Autowired
+	private MajorMapper majorMapper;
+	@Autowired
+	private ClassesMapper classesMapper;
+	@Override
+	public Map selectClassesList() {
+		// TODO Auto-generated method stub
+		Map map = new HashMap();
+		List<Major> majorList = null;
+		List<Academy> academyList = null;
+		academyList = academyMapper.selectList(new Academy());
+		map.put("academyList",academyList);
+		if(academyList!=null && academyList.size()>0){
+			majorList = majorMapper.selectMajorByAcademy(academyList.get(0).getId());
+		}
+		map.put("majorList",majorList);
+		if(majorList!=null && majorList.size()>0 ){
+			List<Classes> classesList = classesMapper.selectListByMajorId(majorList.get(0).getId());
+			map.put("classesList",classesList);
+		}
+		return map;
+	}
 
 	@Override
-	public List<Major> selectMajorList(Major major) {
-		// TODO Auto-generated method stub
-		return majorMapper.selectList(new Major());
+	@ResponseBody
+	public Map selectMajorAndClassesList(Integer academyId) {
+		Map map = new HashMap();
+		List<Major> majorList = majorMapper.selectMajorByAcademy(academyId);
+		map.put("majorList",majorList);
+		if(majorList!=null && majorList.size()>0 ){
+			List<Classes> classesList = classesMapper.selectListByMajorId(majorList.get(0).getId());
+			map.put("classesList",classesList);
+		}
+		return map;
+	}
+
+	@Override
+	@ResponseBody
+	public Map selectOnlyClassesList(Integer majorId) {
+		List<Classes> classesList = classesMapper.selectListByMajorId(majorId);
+		Map map = new HashMap();
+		map.put("classesList",classesList);
+		return map;
 	}
 
 	@Override
@@ -79,36 +117,47 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 	}
 
 	@Override
-	public Map add(String academyId, String flag) {
+	public Map add(String academyId, String majorId) {
 		// TODO Auto-generated method stub
 		List<Academy> academyList = null;
 		List<Major> majorList = null;
+		List<Classes> classesList = null;
 		List<Teacher> teacherList = null;
 		List<Building> buildingList = null;
 		List<Room> roomList = null;
-		if (flag == null) {
+		Map map = new HashMap();
+		if (academyId == null && majorId == null) {
 			academyList = (List<Academy>) academyMapper.selectList(new Academy());
-			System.out.println(academyList.get(0).getId());
 			majorList = (List<Major>) majorMapper.selectMajorByAcademy(academyList.get(0).getId());
+			if(majorList!=null&&majorList.size()>0){
+				classesList = (List<Classes>) classesMapper.selectListByMajorId(majorList.get(0).getId());
+			}
 			teacherList = (List<Teacher>) teacherMapper.selectTeacherByAcademyId(academyList.get(0).getId());
 			buildingList = (List<Building>) buildingRoomMapper.selectBuilding(new Building());
-			roomList = (List<Room>) buildingRoomMapper.selectRoomByBuilding(buildingList.get(0).getBuildingId());
-			Map map = new HashMap();
+			if(buildingList!=null&&buildingList.size()>0){
+				roomList = (List<Room>) buildingRoomMapper.selectRoomByBuilding(buildingList.get(0).getBuildingId());
+			}
 			map.put("majorList", majorList);
 			map.put("academyList", academyList);
+			map.put("classesList",classesList);
 			map.put("teacherList", teacherList);
 			map.put("buildingList", buildingList);
 			map.put("roomList", roomList);
 			map.put("flag", 1);
-			return map;
-		} else {
+		} else if(academyId != null && majorId == null){
 			majorList = (List<Major>) majorMapper.selectMajorByAcademy(Integer.parseInt(academyId));
 			teacherList = (List<Teacher>) teacherMapper.selectTeacherByAcademyId(Integer.parseInt(academyId));
-			Map map = new HashMap();
+			if(majorList!=null&&majorList.size()>0){
+				classesList = (List<Classes>) classesMapper.selectListByMajorId(majorList.get(0).getId());
+			}
 			map.put("majorList", majorList);
 			map.put("teacherList", teacherList);
-			return map;
+			map.put("classesList",classesList);
+		}else if(academyId == null && majorId != null){
+			classesList = (List<Classes>) classesMapper.selectListByMajorId(Integer.parseInt(majorId));
+			map.put("classesList",classesList);
 		}
+		return map;
 	}
 
 	@Override
@@ -121,7 +170,10 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 	public Map addClassCourse() {
 		// TODO Auto-generated method stub
 		List<Major> majorList = (List<Major>) majorMapper.selectList(new Major());
-		int first_major_id = majorList.get(0).getId();
+		int first_major_id = 0;
+		if(majorList.size()>0&&majorList!=null){
+			first_major_id = majorList.get(0).getId();
+		}
 		List<Teacher> teacherList = (List<Teacher>) teacherMapper.selectListByAcademy(first_major_id);
 		List<Course> courseList = (List<Course>) courseMapper.selectListByMajorId(first_major_id);
 		List<Classes> classesList = (List<Classes>) classesMapper.selectListByMajorId(first_major_id);
@@ -191,23 +243,43 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 	}*/
 
 	@Override
-	public ClassesCourseVO getClassesCourse(Params params) {
+	public ClassesCourseVO getClassesCourse(Params params,String classesId) {
 		// TODO Auto-generated method stub
 		ClassesCourse classesCourse = new ClassesCourse();
 		classesCourse.setPagedIndex((params.getPagedIndex() - 1) * params.getPagedSize());
 		classesCourse.setPagedSize(params.getPagedSize());
+		Integer classId = null;
+		if(("null").equals(classesId)|| classesId == null){
+
+		}else{
+			classesCourse.setClassesId(Integer.parseInt(classesId));
+		}
 		List<ClassesCourse> list = (List<ClassesCourse>) classesCourseMapper.selectListPage(classesCourse);
 		for (int i = 0; i < list.size(); i++) {
 			Major major = majorMapper.select(list.get(i).getMajorId());
-			list.get(i).setMajorName(major.getMajorName());
+			if(major == null){
+				list.get(i).setMajorName("(选修)无专业");
+			}else{
+				list.get(i).setMajorName(major.getMajorName());
+			}
 			Classes classes = classesMapper.select(list.get(i).getClassesId());
-			list.get(i).setClassesName(classes.getClassName());
+			if(classes == null){
+				list.get(i).setClassesName("（选修）无班级");
+			}else{
+				list.get(i).setClassesName(classes.getClassName());
+			}
+
 			Course course = courseMapper.select(list.get(i).getCourseId());
 			list.get(i).setCourseName(course.getCourseName());
 			Teacher teacher = teacherMapper.select(list.get(i).getTeacherId());
 			list.get(i).setTeacherName(teacher.getTeacherName());
 		}
-		int total = list.get(0).getTotal();
+		int total = 0;
+		if(list.size()==0 || list==null){
+
+		}else{
+			total = list.get(0).getTotal();
+		}
 		ClassesCourseVO ccvo = new ClassesCourseVO();
 		ccvo.setRows(list);
 		ccvo.setTotal(total);
@@ -234,9 +306,11 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 	@Override
 	public Map insert(String courseName, String needHours, String majorId, String credit, String type, String startWeek,
 			String endWeek, String text, String teacherId, String all_sectionArray, String single_sectionArray,
-			Course course) {
+			Course course,Integer classes_id) {
 		// TODO Auto-generated method stub
-		String is_exist = "";
+		String is_exist = "";//返回的标志位
+		int courseId = 0;//插入后获得的t_course表的主键id
+		//获取课程设置信息，并转化为对应的POJO类型
 		JSONArray jsonArray = JSONArray.fromObject(all_sectionArray);
 		List<CoursePart> list = new ArrayList<CoursePart>();
 		if (jsonArray.size() > 0) {
@@ -244,11 +318,9 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 				Object o = jsonArray.get(i);
 				JSONObject jsonObject = JSONObject.fromObject(o);
 				CoursePart cp = (CoursePart) JSONObject.toBean(jsonObject, CoursePart.class);
-				System.out.println("1" + cp);
 				list.add(cp);
 			}
 		}
-
 		JSONArray jsonArray2 = JSONArray.fromObject(single_sectionArray);
 		List<CoursePart> list2 = new ArrayList<CoursePart>();
 		if (jsonArray2.size() > 0) {
@@ -261,10 +333,7 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 			}
 		}
 
-		Course c = new Course();
-		c.setCourseName(courseName);
-		c.setMajorId(Integer.parseInt(majorId));
-
+		//获取课程地点信息
 		BuildingRoom br = new BuildingRoom();
 		br.setBuildingId(Integer.parseInt(list.get(0).getBuilding()));
 		br.setRoomId(Integer.parseInt(list.get(0).getRoom()));
@@ -277,14 +346,20 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 			_br2 = buildingRoomMapper.selectBuildingRoom(_br);
 		}
 
-		Course cou = courseMapper.selectCourse(c);
-		if (cou == null) {
+		//判断此次设置的课程信息是否已存在相同的记录
+		CoursePO coursePO = new CoursePO();
+		if(classes_id!=0){
+			coursePO.setClassesId(classes_id);
+		}
+		coursePO.setCourseName(courseName);
+		List<Course> couList = courseMapper.selectCourse(coursePO);
+		if (couList==null || couList.size()==0) {
 			course.setCourseName(courseName);
 			course.setNeedHours(Byte.parseByte(needHours));
 			course.setMajorId(Integer.parseInt(majorId));
 			course.setCreateDate(new Date());
-			int i = courseMapper.insert(course);
-			int id = course.getId();
+			int i  = courseMapper.insert(course);//往t_course表插入一条记录
+			courseId = course.getId();//返回刚插入的记录id
 			// 插入course表成功
 			if (i == 1) {
 				List<CourseDetail> courseDetailList = new ArrayList<CourseDetail>();
@@ -306,13 +381,13 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 								cd.setTeacherId(Integer.parseInt(teacherId));
 								cd.setType(type);
 								cd.setWeekId(e);
-								cd.setCourseId(id);
+								cd.setCourseId(courseId);
 								cd.setBuildingRoomId(br2.getTbrId());
 								courseDetailList.add(cd);
 							}
 						}
 					}
-					System.out.println("不区分单双周：" + courseDetailList);
+					//System.out.println("不区分单双周：" + courseDetailList);
 				} else {
 					// 区分单双周
 
@@ -333,7 +408,7 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 								cd.setTeacherId(Integer.parseInt(teacherId));
 								cd.setType(type);
 								cd.setWeekId(e);
-								cd.setCourseId(id);
+								cd.setCourseId(courseId);
 								cd.setBuildingRoomId(_br2.getTbrId());
 								courseDetailList.add(cd);
 							}
@@ -356,17 +431,60 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 								cd.setTeacherId(Integer.parseInt(teacherId));
 								cd.setType(type);
 								cd.setWeekId(e);
-								cd.setCourseId(id);
+								cd.setCourseId(courseId);
 								cd.setBuildingRoomId(br2.getTbrId());
 								courseDetailList.add(cd);
 							}
 						}
 					}
 
-					System.out.println("区分单双周：" + courseDetailList);
+					//System.out.println("区分单双周：" + courseDetailList);
 				}
-				long p = courseDetailMapper.addCourseDetailList(courseDetailList);
+				long p = courseDetailMapper.addCourseDetailList(courseDetailList);//插入多条课程详情记录
 				if (p == courseDetailList.size()) {
+					ClassesCourse _classesCourse = new ClassesCourse();
+					_classesCourse.setClassesId(classes_id);
+					_classesCourse.setCourseId(courseId);
+					List<ClassesCourse> ccList = classesCourseMapper.selectClaCourseByCourseAndClass(_classesCourse);
+					//判断是否有相同的t_class_course表记录
+					if(ccList!=null && ccList.size()>0){
+
+					}else{
+						System.out.println("-----------------------插入ClassesCourse表");
+						ClassesCourse classesCourse = new ClassesCourse();
+						classesCourse.setClassesId(classes_id);
+						classesCourse.setCourseId(courseId);
+						Course course2 = courseMapper.select(courseId);
+						if (course2 != null) {
+							String string = course2.getNeedHours().toString();
+							classesCourse.setHours(Integer.parseInt(string));
+						}
+						classesCourse.setMajorId(Integer.parseInt(majorId));
+						classesCourse.setTeacherId(Integer.parseInt(teacherId));
+						classesCourseMapper.insert(classesCourse);
+
+						System.out.println("-----------------------插入CourseRelationShip表");
+						List<CourseDetail> cdList = courseDetailMapper.selectByCourseId(courseId);
+						List<Student> studentList = studentMapper.selectStudentByClassId(classes_id);
+						List<CourseRelation> courseRelationList = new ArrayList<CourseRelation>();
+						if(studentList!=null && studentList.size()>0){
+							for(int l=0;l<studentList.size();l++){
+								for(int o=0;o<courseDetailList.size();o++){
+									CourseRelation cr = new CourseRelation();
+									Date date = new Date();
+									cr.setCourseDetailId(courseDetailList.get(o).getTcdId());
+									cr.setStudentId(studentList.get(l).getId());
+									cr.setCreateTime(date);
+									cr.setLastUpdateTime(date);
+									courseRelationList.add(cr);
+								}
+							}
+							courseRelationMapper.addCourseRelationList(courseRelationList);
+						}else{
+							System.out.println("没有student可以提供插入到CourseRelationShip表中");
+						}
+				}
+
 					is_exist = "0";
 				}
 
@@ -375,7 +493,7 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 			is_exist = "1";
 		}
 		Map map = new HashMap();
-		map.put("isExist", is_exist);
+		map.put("isExist",is_exist);
 		return map;
 	}
 
@@ -613,7 +731,7 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 						&& myList.get(i).getDayId() == courseList.get(j).getDayId()
 						&& myList.get(i).getSectionId() == courseList.get(j).getSectionId()) {
 					f = false;
-					System.out.println("i:" + i + " j:" + j);
+					//System.out.println("i:" + i + " j:" + j);
 					break outterLoop;
 				}
 			}
@@ -650,25 +768,30 @@ public class CourseServiceImpl extends BaseServiceImpl<Course> implements Course
 				classesCourse.setMajorId(major_id);
 				classesCourse.setTeacherId(teacher_id);
 				classesCourseMapper.insert(classesCourse);
-			} 
-			
+			}
+
 			System.out.println("-----------------------插入CourseRelationShip表");
 			List<CourseDetail> courseDetailList = courseDetailMapper.selectByCourseId(course_id);
 			List<Student> studentList = studentMapper.selectStudentByClassId(class_id);
 			List<CourseRelation> courseRelationList = new ArrayList<CourseRelation>();
-			for(int l=0;l<studentList.size();l++){
-				for(int i=0;i<courseDetailList.size();i++){
-					CourseRelation cr = new CourseRelation();
-					Date date = new Date();
-					cr.setCourseDetailId(courseDetailList.get(i).getTcdId());
-					cr.setStudentId(studentList.get(l).getId());
-					cr.setCreateTime(date);
-					cr.setLastUpdateTime(date);
-					courseRelationList.add(cr);
+			if(studentList!=null && studentList.size()>0){
+				for(int l=0;l<studentList.size();l++){
+					for(int i=0;i<courseDetailList.size();i++){
+						CourseRelation cr = new CourseRelation();
+						Date date = new Date();
+						cr.setCourseDetailId(courseDetailList.get(i).getTcdId());
+						cr.setStudentId(studentList.get(l).getId());
+						cr.setCreateTime(date);
+						cr.setLastUpdateTime(date);
+						courseRelationList.add(cr);
+					}
 				}
+				courseRelationMapper.addCourseRelationList(courseRelationList);
+				return 1;
+			}else{
+				return 0;
 			}
-			courseRelationMapper.addCourseRelationList(courseRelationList);
-			return 1;
+
 		}
 	}
 

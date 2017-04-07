@@ -4,8 +4,9 @@ import java.util.List;
 
 import cn.it.entity.Course;
 import cn.it.entity.CourseRelation;
+import cn.it.entity.vo.CourseDetailVO;
 
 public interface CourseRelationService {
     public long addCourseRelationList(List<CourseRelation> list);
-    public List<Course> selectCourseByTeacherId(Integer teacher_id);
+    public List<CourseDetailVO> selectCourseByTeacherId(Integer teacher_id);
 }

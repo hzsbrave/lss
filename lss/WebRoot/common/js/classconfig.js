@@ -64,6 +64,13 @@
 				});*/
 			}
 	};
+
+
+	$('#selectModel').modal({
+		show:true,
+		backdrop:true
+	})//手动显示模态框
+
 	 var $container = $('.container'),
         $table = $('#table'),
         $small = $('#small'),

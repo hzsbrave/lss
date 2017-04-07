@@ -70,9 +70,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                             <span class="glyphicon glyphicon-plus"></span>
                         </a>
                         <ul class="sec-menu">
-                        	<li><a href="${proPath }/course/list.action"><i></i><span>基本课程设置</span></a></li>
-                            <li><a href="${proPath }/course/classCourse.action"><i></i><span>班级课程信息</span></a></li>
-                            <li><a href="${proPath }/course/addClassCourse.action"><i></i><span>班级课程设置</span></a></li>
+                            <li><a href="${proPath }/course/add.action"><i></i><span>课程设置</span></a></li>
+                            <li><a href="${proPath }/course/classCourse.action"><i></i><span>课程信息</span></a></li>
                         </ul>
                     </li>
                     <li>

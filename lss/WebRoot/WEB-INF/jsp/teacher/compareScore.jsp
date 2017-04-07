@@ -51,7 +51,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                     <!-- 
                     <img src="<%=basePath %>common/images/2.jpg" alt="" />
                      -->
-                    <span>${loginUser.teacherName }</span>
+                    <span>${loginUser_teacher.teacherName }</span>
                     <span class="caret"></span>
                   </a>
                   <ul class="dropdown-menu pull-right extended" aria-labelledby="profile">
@@ -61,7 +61,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                     <li><a href="##"><i class="glyphicon glyphicon-cog"></i>Setting</a></li>
                     <li><a href="##"><i class="glyphicon glyphicon-tint"></i>Notification</a></li>
                      -->
-                    <li><a href="${proPath }/login/loginOut.action"><i class="glyphicon glyphicon-log-out"></i>退出</a></li>
+                    <li><a href="${proPath }/login/loginOut.action?flag=2"><i class="glyphicon glyphicon-log-out"></i>退出</a></li>
                   </ul>
                 </div>
             </div>
@@ -104,7 +104,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                         </a>
                     </li>
                     <li>
-                        <a href="${proPath }/teacher/analysis.action?teacher_id=${loginUser.id}">
+                        <a href="${proPath }/teacher/analysis.action?teacher_id=${loginUser_teacher.id}">
                             <i class="glyphicon glyphicon-pencil"></i>
                             <span>教学质量评价</span>
                         </a>

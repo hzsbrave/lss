@@ -8,7 +8,10 @@ public class CoursePO {
 	private Integer dayId;
 	private String type;
 	private Integer sectionId;
-	
+	private Integer classesId;
+	private String CourseName;
+
+
 	public Integer getSectionId() {
 		return sectionId;
 	}
@@ -51,5 +54,20 @@ public class CoursePO {
 	public void setDayId(Integer dayId) {
 		this.dayId = dayId;
 	}
-	
+
+	public Integer getClassesId() {
+		return classesId;
+	}
+
+	public void setClassesId(Integer classesId) {
+		this.classesId = classesId;
+	}
+
+	public String getCourseName() {
+		return CourseName;
+	}
+
+	public void setCourseName(String courseName) {
+		CourseName = courseName;
+	}
 }

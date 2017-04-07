@@ -59,11 +59,13 @@ public class ReadExcel {
 					XSSFCell class_id = xssfRow.getCell(18);
 					XSSFCell examinee = xssfRow.getCell(19);
 					XSSFCell password = xssfRow.getCell(20);
+					XSSFCell token = xssfRow.getCell(21);
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-					String idstr = getValue2(id);
+
+				/*	String idstr = getValue2(id);
 					if (!idstr.equals("")) {
 						student.setId(Integer.parseInt(idstr));
-					}
+					}*/
 
 					String useridstr = getValue2(user_id);
 					if (!useridstr.equals("")) {
@@ -120,6 +122,8 @@ public class ReadExcel {
 
 					student.setPassword(getValue2(password));
 
+					student.setToken(getValue2(token));
+
 					list.add(student);
 				}
 			}
@@ -163,7 +167,7 @@ public class ReadExcel {
 					HSSFCell class_id = hssfRow.getCell(18);
 					HSSFCell examinee = hssfRow.getCell(19);
 					HSSFCell password = hssfRow.getCell(20);
-
+					HSSFCell token = hssfRow.getCell(21);
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 					String idstr = getValue(id);
 					if (!idstr.equals("")) {
@@ -224,6 +228,8 @@ public class ReadExcel {
 					student.setExaminee(getValue(examinee));
 
 					student.setPassword(getValue(password));
+
+					student.setToken(getValue(token));
 
 					list.add(student);
 				}

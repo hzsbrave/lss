@@ -11,10 +11,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.jws.WebParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import cn.it.entity.vo.CourseDetailVO;
+import cn.it.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,14 +35,6 @@ import cn.it.entity.Teacher;
 import cn.it.entity.model.EvaluatePO;
 import cn.it.entity.vo.EvaluateVO;
 import cn.it.entity.vo.TeacherVO;
-import cn.it.service.AcademyService;
-import cn.it.service.ClassesCourseService;
-import cn.it.service.ClassesService;
-import cn.it.service.CourseRelationService;
-import cn.it.service.CourseService;
-import cn.it.service.EvaluateService;
-import cn.it.service.MajorService;
-import cn.it.service.TeacherService;
 import net.sf.json.JSONArray;
 
 @Controller
@@ -64,7 +59,10 @@ public class TeacherAction extends BaseAction {
 	private ClassesService claseesService;
 	@Autowired
 	private CourseRelationService courseRelationService;
-	
+	@Resource
+	private ScoreService scoreService;
+	@Resource
+	private StudentService studentService;
 	
 	@RequestMapping("/listAnalysisDetail")
 	@ResponseBody
@@ -91,7 +89,7 @@ public class TeacherAction extends BaseAction {
 	@RequestMapping("/analysisDetail")
 	public ModelAndView analysisDetail(HttpServletRequest request){
 		String teacher_id = request.getParameter("teacher_id");
-		List<Course> list = courseRelationService.selectCourseByTeacherId(Integer.parseInt(teacher_id));
+		List<CourseDetailVO> list = courseRelationService.selectCourseByTeacherId(Integer.parseInt(teacher_id));
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("list",list);
 		mv.setViewName("forward:/WEB-INF/jsp/teacher/analysisDetail.jsp");
@@ -376,36 +374,27 @@ public class TeacherAction extends BaseAction {
 		teacher.setXueliId(xueliId);
 		//int i = teacherService.update(teacher);
 		teacherService.updateExam(teacher);
-		request.getSession().setAttribute("loginUser", teacher);
+		request.getSession().setAttribute("loginUser_teacher", teacher);
 		return "redirect:/teacher/teacherInfor.action";
 	}
 	
 	//学生信息
 	@RequestMapping("/studentInfor")
-	public String studentInfor(HttpServletRequest request){
-		/*Classes classes = new Classes();
-		List<Classes> classesList = (List<Classes>) classesService.selectList(classes);
-		request.setAttribute("classesList", classesList);*/
-		return "forward:/WEB-INF/jsp/teacher/student.jsp";
+	public ModelAndView studentInfor(HttpServletRequest request,HttpSession session){
+		Teacher teacher = (Teacher) session.getAttribute("loginUser_teacher");
+		List<CourseDetailVO> courseList = studentService.selectCourseByTeacherId(teacher.getId());
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("forward:/WEB-INF/jsp/teacher/student.jsp");
+		mv.addObject("courseList",courseList);
+		return mv;
 	}
 	
 	//学生成绩信息
 	@RequestMapping("/scoreInfor")
 	public String scoreInfor(HttpServletRequest request,HttpSession session){
-		Teacher teacher = (Teacher) session.getAttribute("loginUser");
-		ClassesCourse classesCourse = new ClassesCourse();
-		classesCourse.setTeacherId(teacher.getId());
-		List<ClassesCourse> classesCourseList = (List<ClassesCourse>) classesCourseService.selectList(classesCourse);
-		List<Classes> classesList = new ArrayList<Classes>();
-		List<Course> courseList = new ArrayList<Course>();
-		for (int i = 0; i < classesCourseList.size(); i++) {
-			Classes classes = classesService.select(classesCourseList.get(i).getClassesId());
-			classesList.add(classes);
-			Course course = courseService.select(classesCourseList.get(i).getCourseId());
-			courseList.add(course);
-		}
-		request.setAttribute("classesList", classesList);
-		request.setAttribute("courseList", courseList);
+		Teacher teacher = (Teacher) session.getAttribute("loginUser_teacher");
+		Map map = scoreService.listForScore(teacher.getId());
+		request.setAttribute("courseList",map.get("courseList"));
 		return "forward:/WEB-INF/jsp/teacher/score.jsp";
 	}
 	

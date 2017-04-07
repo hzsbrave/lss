@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.it.dao.CourseRelationMapper" >
-  <resultMap id="BaseResultMap" type="cn.it.entity.CourseRelation" >
-    <id column="tcr_id" property="tcrId" jdbcType="INTEGER" />
-    <result column="student_id" property="studentId" jdbcType="INTEGER" />
-    <result column="course_detail_id" property="courseDetailId" jdbcType="INTEGER" />
-    <result column="create_time" property="createTime" jdbcType="DATE" />
-    <result column="last_update_time" property="lastUpdateTime" jdbcType="DATE" />
-  </resultMap>
-  <resultMap id="StudentBaseResultMap" type="cn.it.entity.Student">
+    <resultMap id="BaseResultMap" type="cn.it.entity.CourseRelation" >
+        <id column="tcr_id" property="tcrId" jdbcType="INTEGER" />
+        <result column="student_id" property="studentId" jdbcType="INTEGER" />
+        <result column="course_detail_id" property="courseDetailId" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="DATE" />
+        <result column="last_update_time" property="lastUpdateTime" jdbcType="DATE" />
+    </resultMap>
+    <resultMap id="StudentBaseResultMap" type="cn.it.entity.Student">
 		<id column="id" property="id" jdbcType="INTEGER" />
 		<result column="user_id" property="userId" jdbcType="INTEGER" />
 		<result column="student_name" property="studentName" jdbcType="VARCHAR" />
@@ -32,14 +32,14 @@
 		<result column="examinee" property="examinee" jdbcType="VARCHAR" />
 		<result column="password" property="password" jdbcType="VARCHAR" />
 		<result column="token" property="token" jdbcType="VARCHAR" />
-</resultMap>
-<resultMap id="CourseBaseResultMap" type="cn.it.entity.Course">
-	<id column="id" property="id" jdbcType="INTEGER" />
-	<result column="course_name" property="courseName" jdbcType="VARCHAR" />
-	<result column="need_hours" property="needHours" jdbcType="TINYINT" />
-	<result column="major_id" property="majorId" jdbcType="INTEGER" />
-	<result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
-</resultMap>
+    </resultMap>
+    <resultMap id="CourseBaseResultMap" type="cn.it.entity.Course">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="course_name" property="courseName" jdbcType="VARCHAR" />
+        <result column="need_hours" property="needHours" jdbcType="TINYINT" />
+        <result column="major_id" property="majorId" jdbcType="INTEGER" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
       <foreach collection="oredCriteria" item="criteria" separator="or" >
@@ -182,53 +182,67 @@
     </if>
   </select>
   
-  <select id="selectStudentByTeacherId" parameterType="java.lang.Integer" resultMap="StudentBaseResultMap">
-	SELECT 
-		DISTINCT(ts.id),
-		ts.user_id,
-		ts.student_name,
-		ts.student_no,
-		ts.gender,
-		ts.natives,
-		ts.birthday,
-		ts.address,
-		ts.enter_date,
-		ts.phone,
-		ts.QQ,
-		ts.email,
-		ts.national,
-		ts.Political,
-		ts.idCard,
-		ts.family_phone,
-		ts.middle_school,
-		ts.grade,
-		ts.class_id,
-		ts.examinee,
-		ts.`password`,
-		ts.token	
-	FROM
-		t_course_detail tcd,
-		t_c_relationship tcr,
-		t_student ts
-	WHERE
-		tcd.tcd_id = tcr.course_detail_id
-	AND tcr.student_id = ts.id
-	AND tcd.teacher_id = #{id,jdbcType=INTEGER}
+  <select id="selectStudentByTeacherId" parameterType="cn.it.entity.model.TeacherPO" resultMap="StudentBaseResultMap">
+      SELECT
+          ts.id,
+          ts.user_id,
+          ts.student_name,
+          ts.student_no,
+          ts.gender,
+          ts.natives,
+          ts.birthday,
+          ts.address,
+          ts.enter_date,
+          ts.phone,
+          ts.QQ,
+          ts.email,
+          ts.national,
+          ts.Political,
+          ts.idCard,
+          ts.family_phone,
+          ts.middle_school,
+          ts.grade,
+          ts.class_id,
+          ts.examinee,
+          ts.`password`,
+          ts.token
+      FROM
+      (
+      SELECT DISTINCT
+        (tcr.student_id) studentId
+      FROM
+        t_course_detail tcd,
+        t_c_relationship tcr
+      WHERE
+      tcr.course_detail_id = tcd.tcd_id
+      <if test="teacherId != null">
+          AND tcd.teacher_id = #{teacherId,jdbcType=INTEGER}
+      </if>
+      <if test="courseId != null">
+          AND tcd.course_id = #{courseId,jdbcType=INTEGER}
+      </if>
+      ) t
+      LEFT JOIN t_student ts ON t.studentId = ts.id
   </select>
   
-    <select id="selectCourseByTeacherId" parameterType="java.lang.Integer" resultMap="CourseBaseResultMap">
-	SELECT 	
-		DISTINCT(tc.id),
-		tc.course_name,
-		tc.need_hours,
-		tc.major_id,
-		tc.create_date	
-	FROM
-		t_course_detail tcd,
-		t_course tc
-	WHERE
-	tcd.course_id = tc.id
-	AND tcd.teacher_id =  #{id,jdbcType=INTEGER}
+    <select id="selectCourseByTeacherId" parameterType="java.lang.Integer" resultType="cn.it.entity.vo.CourseDetailVO">
+        SELECT DISTINCT
+            (tc.id) id,
+            tc.course_name courseName,
+            tc.need_hours needHours,
+            tc.major_id majorId,
+            tc.create_date createDate,
+            tcl.class_name className
+        FROM
+            t_course_detail tcd,
+            t_course tc,
+            t_classes_course tcc,
+            t_classes tcl
+        WHERE
+            tcc.course_id = tc.id
+        AND tcl.id = tcc.classes_id
+        AND	tcd.course_id = tc.id
+        AND tcd.teacher_id = #{id,jdbcType=INTEGER}
   </select>
   
   <update id="updateByExampleSelective" parameterType="map" >

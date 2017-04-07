@@ -75,19 +75,16 @@
   <select id="selectListPage" resultMap="BaseResultMapForList" parameterType="classesCourse" >
     select 
     <include refid="Base_Column_List_For_list" />
-     from (select s.*,(select count(1) from t_classes_course)total from t_classes_course s)t
+     from (select s.*,(select count(1) from t_classes_course _t
+        <where>
+            <if test="classesId!=null">
+                and _t.classes_id = #{classesId}
+            </if>
+        </where>
+      )total from t_classes_course s)t
     <where>
-		<if test="teacherId!=null">
-			and t.teacher_id=#{teacherId}
-		</if>
 		<if test="classesId!=null">
-			and t.classes_id like #{classesId}
-		</if>
-		<if test="courseId!=null">
-			and t.course_id like #{courseId}
-		</if>
-		<if test="majorId!=null">
-			and t.major_id like #{majorId}
+			and t.classes_id = #{classesId}
 		</if>
 		 and t.id limit #{pagedIndex,jdbcType=INTEGER},#{pagedSize,jdbcType=INTEGER}
 	</where>

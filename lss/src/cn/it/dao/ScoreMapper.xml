@@ -34,7 +34,23 @@
 		</if>
 	</where>
   </select>
-  
+
+  <select id="selectListByTeacher" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    SELECT
+    DISTINCT(tsc.id),
+      tsc.course_id,
+      tsc.exam_date,
+      tsc.score,
+      tsc.student_id,
+      tsc.term
+    FROM
+      t_score tsc,
+      t_course_detail tcd
+    WHERE
+      tsc.course_id = tcd.course_id
+    AND tcd.teacher_id = #{teacherId,jdbcType=INTEGER}
+  </select>
+
   <delete id="deleteList" >
   	delete from t_score where id in
   		<foreach collection="array" close=")" open="(" item="id" separator=",">

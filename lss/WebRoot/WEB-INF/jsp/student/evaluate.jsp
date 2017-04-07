@@ -34,7 +34,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                     <!-- 
                     <img src="../images/2.jpg" alt="" />
                      -->
-                    <span>${loginUser.studentName }</span>
+                    <span>${loginUser_student.studentName }</span>
                     <span class="caret"></span>
                   </a>
                   <ul class="dropdown-menu pull-right extended" aria-labelledby="profile">
@@ -44,7 +44,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                     <li><a href="##"><i class="glyphicon glyphicon-cog"></i>Setting</a></li>
                     <li><a href="##"><i class="glyphicon glyphicon-tint"></i>Notification</a></li>
                      -->
-                    <li><a href="${proPath }/login/loginOut.action"><i class="glyphicon glyphicon-log-out"></i>退出</a></li>
+                    <li><a href="${proPath }/login/loginOut.action?flag=1"><i class="glyphicon glyphicon-log-out"></i>退出</a></li>
                   </ul>
                 </div>
             </div>
@@ -87,7 +87,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
         </aside>
        <section class="main-content">
        		<input id="hidden" value="${lssPath}" hidden/>
-        	<input id="userid" value="${loginUser.id}" hidden/>
+        	<input id="userid" value="${loginUser_student.id}" hidden/>
             <section class="wrapper">
             	<div class="container">
                     <div id="toolbar">

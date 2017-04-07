@@ -75,7 +75,7 @@ thead>tr>th:nth-child(3), tbody>tr>td:nth-child(3) {
                         </a>
                     </li>
                     <li  class="active">
-                        <a href="${proPath }/teacher/analysis.action?teacher_id=${loginUser.id}">
+                        <a href="${proPath }/teacher/analysis.action?teacher_id=${loginUser_teacher.id}">
                             <i class="glyphicon glyphicon-pencil"></i>
                             <span>教学质量评价</span>
                         </a>
@@ -115,7 +115,7 @@ thead>tr>th:nth-child(3), tbody>tr>td:nth-child(3) {
 		<input id="hidden4" value="${level4}" hidden/>
 		<input id="hidden5" value="${level5}" hidden/>
 		<input id="hidden6" value="${lssPath}" hidden/>
-		<input id="teacherId" value="${loginUser.id}" hidden/>
+		<input id="teacherId" value="${loginUser_teacher.id}" hidden/>
 	</section>
 	
 	<script src="<%=basePath%>common/js/jquery-1.11.1.min.js"></script>

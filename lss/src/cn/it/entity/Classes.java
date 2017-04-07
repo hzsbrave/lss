@@ -1,6 +1,6 @@
 package cn.it.entity;
 
-public class Classes extends Params{
+public class Classes extends ClassesParam{
     private Integer id;
 
     private String className;

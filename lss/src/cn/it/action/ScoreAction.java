@@ -11,6 +11,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.it.entity.model.TeacherPO;
+import cn.it.entity.vo.CourseDetailVO;
 import net.sf.json.JSONArray;
 
 import org.springframework.stereotype.Controller;
@@ -28,6 +30,8 @@ import cn.it.service.ClassesService;
 import cn.it.service.CourseService;
 import cn.it.service.ScoreService;
 import cn.it.service.StudentService;
+import org.springframework.web.servlet.ModelAndView;
+
 /**
  * 
  * modify by yezhiqiang
@@ -70,18 +74,12 @@ public class ScoreAction extends BaseAction {
 	
 	@RequestMapping("/list")
 	public String list(HttpServletRequest request){
-		Course course = new Course();
-		List<Course> courseList = (List<Course>) courseService.selectList(course);
-		request.setAttribute("courseList", courseList);
-		Classes classes = new Classes();
-		List<Classes> classesList = (List<Classes>) classesService.selectList(classes);
-		request.setAttribute("classesList", classesList);
 		return "forward:/WEB-INF/jsp/score.jsp";
 	}
 	
 	@RequestMapping("/get")
 	@ResponseBody 
-	public void get(HttpServletResponse response) throws Exception{
+	public void get(HttpServletResponse response,HttpServletRequest request) throws Exception{
 		response.setCharacterEncoding("utf-8");
 		Score score = new Score();
 		List<Score> list = (List<Score>) scoreService.selectList(score);
@@ -143,13 +141,36 @@ public class ScoreAction extends BaseAction {
 	 * 教师角色
 	 */
 	@RequestMapping("/addScore")
-	public String addScore(HttpServletRequest request){
-		Teacher teacher = (Teacher) request.getSession().getAttribute("loginUser");
-		List<Student> studentList = studentService.selectStudentByTeacherId(teacher.getId());
-		List<Course> courseList = studentService.selectCourseByTeacherId(teacher.getId());
-		request.setAttribute("courselList", courseList);
-		request.setAttribute("studentList", studentList);
-		return "forward:/WEB-INF/jsp/teacher/appendScore.jsp";
+	@ResponseBody
+	public Object addScore(HttpServletRequest request){
+		Teacher teacher = (Teacher) request.getSession().getAttribute("loginUser_teacher");
+		Integer courseId = null;
+		if(("undefined").equals(request.getParameter("courseId"))|| request.getParameter("courseId") == null){
+
+		}else{
+			courseId= Integer.parseInt(request.getParameter("courseId"));
+		}
+		if(courseId==null){
+			List<CourseDetailVO> courseList = studentService.selectCourseByTeacherId(teacher.getId());
+			TeacherPO teacherPO = new TeacherPO();
+			teacherPO.setTeacherId(teacher.getId());
+			if(courseList!=null&&courseList.size()>0){
+				teacherPO.setCourseId(courseList.get(0).getId());
+			}
+			List<Student> studentList = studentService.selectStudentByTeacherId(teacherPO);
+			ModelAndView mv = new ModelAndView();
+			mv.setViewName("forward:/WEB-INF/jsp/teacher/appendScore.jsp");
+			mv.addObject("courseList", courseList);
+			mv.addObject("studentList", studentList);
+			return mv;
+		}else{
+			TeacherPO teacherPO = new TeacherPO();
+			teacherPO.setTeacherId(teacher.getId());
+			teacherPO.setCourseId(courseId);
+			List<Student> studentList = studentService.selectStudentByTeacherId(teacherPO);
+			return studentList;
+		}
+
 	}
 
 	@RequestMapping("/insertScore")
@@ -188,19 +209,34 @@ public class ScoreAction extends BaseAction {
 	@ResponseBody 
 	public void getByTeacher(HttpServletRequest request,HttpServletResponse response) throws Exception{
 		response.setCharacterEncoding("utf-8");
-		
-		Teacher teacher = (Teacher) request.getSession().getAttribute("loginUser");
-		List<Student> studentList = studentService.selectStudentByTeacherId(teacher.getId());
-		Score score = new Score();
-		List<Score> list = (List<Score>) scoreService.selectList(score);
+		Integer courseId = null;
+		if(("undefined").equals(request.getParameter("courseId"))|| request.getParameter("courseId") == null){
+
+		}else{
+			courseId= Integer.parseInt(request.getParameter("courseId"));
+		}
+		Teacher teacher = (Teacher) request.getSession().getAttribute("loginUser_teacher");
+		TeacherPO teacherPO = new TeacherPO();
+		teacherPO.setTeacherId(teacher.getId());
+		teacherPO.setCourseId(courseId);
+		List<Student> studentList = studentService.selectStudentByTeacherId(teacherPO);
+		List<Score> list = (List<Score>) scoreService.selectListByTeacher(teacher.getId());
 		List<Score> resultList = new ArrayList<Score>();
 		for(int i=0;i<list.size();i++){
 			for(int j=0;j<studentList.size();j++){
-				System.out.println(studentList.get(j).getId()+"  "+list.get(i).getStudentId());
-				if(studentList.get(j).getId().equals(list.get(i).getStudentId())){
-					resultList.add(list.get(i));
-					break;
+				//System.out.println(studentList.get(j).getId()+"  "+list.get(i).getStudentId());
+				if(courseId==null){
+					if(studentList.get(j).getId().equals(list.get(i).getStudentId())){
+						resultList.add(list.get(i));
+						break;
+					}
+				}else{
+					if(studentList.get(j).getId().equals(list.get(i).getStudentId()) && list.get(i).getCourseId()==courseId){
+						resultList.add(list.get(i));
+						break;
+					}
 				}
+
 			}
 		}
 
@@ -254,7 +290,7 @@ public class ScoreAction extends BaseAction {
 	public void studentScore(HttpServletResponse response,HttpServletRequest request) throws Exception{
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		response.setCharacterEncoding("utf-8");
-		Student user = (Student) request.getSession().getAttribute("loginUser");
+		Student user = (Student) request.getSession().getAttribute("loginUser_student");
 		Score score = new Score();
 		score.setStudentId(user.getId());
 		List<Score> list = (List<Score>) scoreService.selectList(score);

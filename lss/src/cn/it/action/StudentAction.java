@@ -11,9 +11,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.swing.plaf.synth.SynthSpinnerUI;
 
+import cn.it.entity.model.TeacherPO;
 import net.sf.json.JSONArray;
 
 
@@ -173,7 +172,9 @@ public class StudentAction extends BaseAction {
 		if(flag == null){
 			academyList = (List<Academy>) academyService.selectList(new Academy());
 			majorList = majorService.selectMajorByAcademy(academyList.get(0).getId());
-			classesList = claseesService.selectListByMajorId(majorList.get(0).getId());
+			if(majorList!=null&&majorList.size()>0){
+				classesList = claseesService.selectListByMajorId(majorList.get(0).getId());
+			}
 			ModelAndView mv = new ModelAndView();
 			mv.setViewName("forward:/WEB-INF/jsp/student.jsp");
 			mv.addObject("academyList",academyList);
@@ -308,7 +309,9 @@ public class StudentAction extends BaseAction {
 		if(academyId == null){
 			academyList = (List<Academy>) academyService.selectList(new Academy());
 			majorList = majorService.selectMajorByAcademy(academyList.get(0).getId());
-			classesList = claseesService.selectListByMajorId(majorList.get(0).getId());
+			if(majorList!=null&&majorList.size()>0){
+				classesList = claseesService.selectListByMajorId(majorList.get(0).getId());
+			}
 			mv.setViewName("forward:/WEB-INF/jsp/appendStuInfo.jsp");
 			mv.addObject("academyList",academyList);
 			mv.addObject("majorList",majorList);
@@ -347,52 +350,26 @@ public class StudentAction extends BaseAction {
 		String phone = request.getParameter("phone");
 		String email = request.getParameter("email");
 		String idcard = request.getParameter("idcard");
-		String is_exist = null;
-		int id = 0;
-		Student stu = studentService.selectStudentByNo(studentNo);
-		if(stu==null){
-			student = new Student();
-			student.setStudentNo(studentNo);
-			student.setPassword(studentNo);
-			student.setStudentName(studentName);
-			student.setGrade(grade);
-			student.setClassId(Integer.parseInt(classId));
-			student.setGender(Integer.parseInt(gender));
-			student.setEnterDate(sdf.parse(enterDate));
-			student.setPhone(phone);
-			student.setEmail(email);
-			student.setIdcard(idcard);
-			int i=studentService.insert(student);
-			id = student.getId();
-			// 融云token---接口
-			PushAPI apiPush=new PushAPI();
-			String tokenStr=apiPush.getTokenByUserid(id+"", studentName, "");
-			TokenReslut userGetTokenResult=(TokenReslut) GsonUtil.fromJson(tokenStr, TokenReslut.class);
-			String tokens = userGetTokenResult.getToken();
-			Student s = new Student();
-			s.setId(id);
-			s.setToken(tokens);
-			int k = studentService.updateExam(s);
-			if(k==1){
-				is_exist = "0";//插入成功
-			}
-		}else{
-			is_exist = "1";//账户已存在
-		}
-
-		Map map = new HashMap();
-		map.put("isExist", is_exist);
-		return map;
+		Student s = new Student();
+		s.setStudentNo(studentNo);
+		s.setStudentName(studentName);
+		s.setGrade(grade);
+		s.setClassId(Integer.parseInt(classId));
+		s.setGender(Integer.parseInt(gender));
+		s.setEnterDate(sdf.parse(enterDate));
+		s.setPhone(phone);
+		s.setEmail(email);
+		s.setIdcard(idcard);
+		return studentService.insertStudentInfo(s);
 	}
 	
 	@RequestMapping("/insertmore")
 	public String insertmore(HttpServletResponse response,HttpServletRequest request,MultipartFile file_path) throws Exception{
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		long flag = 0;
+		List<Student> list = new ArrayList<Student>();
 		if (file_path != null && file_path.getOriginalFilename() != null && file_path.getOriginalFilename().length() > 0) {
 			InputStream is = file_path.getInputStream();
 			 ReadExcel r = new ReadExcel();
-				List<Student> list = new ArrayList<Student>();
 				if (WDWUtil.isExcel2007(file_path.getOriginalFilename())) {
 					list = r.readXls(is);//2007版
 					System.out.println("2007");
@@ -401,7 +378,9 @@ public class StudentAction extends BaseAction {
 					System.out.println("2003");
 				}
 				System.out.println(list);
-				flag = studentService.addStudentList(list);
+		}
+		if(list!=null&&list.size()>0){
+			 studentService.insertStudentList(list);
 		}
 		return "redirect:/student/list.action"; 
 	}
@@ -508,7 +487,7 @@ public class StudentAction extends BaseAction {
 		student.setPolitical(political);
 		//int i = studentService.update(student);
 		studentService.updateExam(student);
-		request.getSession().setAttribute("loginUser", student);
+		request.getSession().setAttribute("loginUser_student", student);
 		return "redirect:/student/studentInfor.action";
 	}
 	
@@ -525,9 +504,20 @@ public class StudentAction extends BaseAction {
 	@ResponseBody 
 	public void getStudent(HttpServletRequest request,HttpServletResponse reponse) throws Exception{
 		reponse.setCharacterEncoding("utf-8");
+		Integer courseId = null;
+		if(("undefined").equals(request.getParameter("courseId"))|| request.getParameter("courseId") == null){
+
+		}else{
+			courseId= Integer.parseInt(request.getParameter("courseId"));
+		}
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Teacher teacher = (Teacher) request.getSession().getAttribute("loginUser");
-		List<Student> list = studentService.selectStudentByTeacherId(teacher.getId());
+		Teacher teacher = (Teacher) request.getSession().getAttribute("loginUser_teacher");
+		TeacherPO teacherPO = new TeacherPO();
+		teacherPO.setTeacherId(teacher.getId());
+		if(courseId!=null){
+			teacherPO.setCourseId(courseId);
+		}
+		List<Student> list = studentService.selectStudentByTeacherId(teacherPO);
 		for (int i = 0; i < list.size(); i++) {
 			list.get(i).setEnterTime(sdf.format(list.get(i).getEnterDate()));
 			if(list.get(i).getGender()==0){

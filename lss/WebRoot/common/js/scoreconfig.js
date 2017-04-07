@@ -4,6 +4,8 @@
         $small = $('#small'),
         $big = $('#big');
 
+
+
     $(function () {
         $small.click(function () {
             $container.width($container.width() - 50);

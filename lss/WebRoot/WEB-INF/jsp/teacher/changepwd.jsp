@@ -28,7 +28,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             <div class="collapse navbar-collapse">
                 <div class="dropdown">
                   <a class="dropdown-toggle user-info" type="button" id="profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    <span>${loginUser.teacherName }</span>
+                    <span>${loginUser_teacher.teacherName }</span>
                     <span class="caret"></span>
                   </a>
                   <ul class="dropdown-menu pull-right extended" aria-labelledby="profile">
@@ -79,7 +79,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                         </a>
                     </li>
                     <li>
-                         <a href="${proPath }/teacher/analysis.action?teacher_id=${loginUser.id}">
+                         <a href="${proPath }/teacher/analysis.action?teacher_id=${loginUser_teacher.id}">
                             <i class="glyphicon glyphicon-pencil"></i>
                             <span>教学质量评价</span>
                         </a>
@@ -90,7 +90,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
         <section class="main-content">
         	<section class="wrapper">
         		<input id="hidden" value="${lssPath}" hidden/>
-        		<input id="userid" value="${loginUser.id}" hidden/>
+        		<input id="userid" value="${loginUser_teacher.id}" hidden/>
             	<form class="form-horizontal" role="form">
                    <div class="form-group">
                       <label class="col-md-2 col-sm-2 control-label" for="old" >旧密码：</label>
@@ -137,7 +137,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					success: function(data){
 						if(data.success == "1"){
 							alert("修改成功");
-							location.href = $('#hidden').val()+"/login/loginOut.action";
+							location.href = $('#hidden').val()+"/login/loginOut.action?flag=2";
 						}else{
 							alert("原密码错误");
 						}

@@ -2,6 +2,7 @@ package cn.it.service.impl;
 
 import java.util.List;
 
+import cn.it.entity.vo.CourseDetailVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class CourseRelationServiceImpl implements CourseRelationService{
 		return courseRelationMapper.addCourseRelationList(list);
 	}
 	@Override
-	public List<Course> selectCourseByTeacherId(Integer teacher_id) {
+	public List<CourseDetailVO> selectCourseByTeacherId(Integer teacher_id) {
 		// TODO Auto-generated method stub
 		return courseRelationMapper.selectCourseByTeacherId(teacher_id);
 	}

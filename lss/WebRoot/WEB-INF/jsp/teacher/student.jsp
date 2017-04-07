@@ -34,12 +34,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                     <!-- 
                     <img src="<%=basePath %>common/images/2.jpg" alt="" />
                      -->
-                    <span>${loginUser.teacherName }</span>
+                    <span>${loginUser_teacher.teacherName }</span>
                     <span class="caret"></span>
                   </a>
                   <ul class="dropdown-menu pull-right extended" aria-labelledby="profile">
                     <div class="log-arrow-up"></div>
-                    <li><a href="${proPath }/login/loginOut.action"><i class="glyphicon glyphicon-log-out"></i>退出</a></li>
+                    <li><a href="${proPath }/login/loginOut.action?flag=2"><i class="glyphicon glyphicon-log-out"></i>退出</a></li>
                   </ul>
                 </div>
             </div>
@@ -84,7 +84,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                         </a>
                     </li>
                      <li>
-                        <a href="${proPath }/teacher/analysis.action?teacher_id=${loginUser.id}">
+                        <a href="${proPath }/teacher/analysis.action?teacher_id=${loginUser_teacher.id}">
                             <i class="glyphicon glyphicon-pencil"></i>
                             <span>教学质量评价</span>
                         </a>
@@ -164,6 +164,41 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 </div><!-- /.modal -->
  <div class="modal-backdrop fade in"></div>
 <!--模态对话框-->
+
+    <!-- Modal for initSelectStudentByTeacher-->
+    <div class="modal fade" id="selectModel" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">请筛选：</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-2 control-label">所属课程名称：</label>
+                            <div class="col-sm-5">
+                                <select class="form-control" id="course" name="courseId">
+                                    <c:forEach items="${courseList }" var="course">
+                                        <option value="${course.id }">${course.courseName }  ${course.className }</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">放弃筛选</button>
+                    <button type="button" class="btn btn-primary" id="mysubmit">筛选</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 	<script src="<%=basePath %>common/js/jquery-1.11.1.min.js"></script>
     <script src="<%=basePath %>common/js/bootstrap.min.js"></script>
     <script src="<%=basePath %>common/js/bootstrap-table.js"></script>
@@ -189,6 +224,16 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			console.log(ids);
 		});
 	  });
+
+
+      $('#mysubmit').click(function(){
+          var courseId = $('#course').val();
+          $table.bootstrapTable('refresh', {
+              url : $('#hidden').val()
+              + '/student/getStudent.action?courseId=' + courseId
+          });
+          $("#selectModel").modal('hide');//手动隐藏模态框
+      });
     </script>
   </body>
 </html>

@@ -63,16 +63,27 @@ public class CourseAction extends BaseAction {
 
 	@RequestMapping("/list")
 	public String list(HttpServletRequest request) {
-		List<Major> majormyList = courseService.selectMajorList(new Major());
-		request.setAttribute("majormyList", majormyList);
 		return "forward:/WEB-INF/jsp/course.jsp";
 	}
 
 	@RequestMapping("/classCourse")
-	public String classCourse(HttpServletRequest request) {
-		List<Major> majormyList = courseService.selectMajorList(new Major());
-		request.setAttribute("majormyList", majormyList);
-		return "forward:/WEB-INF/jsp/classCurriculum.jsp";
+	@ResponseBody
+	public Object classCourse(HttpServletRequest request) {
+		if(request.getParameter("academyId")!=null){
+			Map map = courseService.selectMajorAndClassesList(Integer.parseInt(request.getParameter("academyId")));
+			return map;
+		}else if(request.getParameter("majorId")!=null){
+			Map map = courseService.selectOnlyClassesList(Integer.parseInt(request.getParameter("majorId")));
+			return map;
+		}else{
+			ModelAndView mv = new ModelAndView();
+			mv.setViewName("forward:/WEB-INF/jsp/classCurriculum.jsp");
+			Map map = courseService.selectClassesList();
+			mv.addObject("academyList", map.get("academyList"));
+			mv.addObject("majorList", map.get("majorList"));
+			mv.addObject("classesList", map.get("classesList"));
+			return mv;
+		}
 	}
 
 	@RequestMapping("/get")
@@ -86,19 +97,20 @@ public class CourseAction extends BaseAction {
 	@ResponseBody
 	public Object add(HttpServletRequest request) {
 		String academyId = request.getParameter("academyId");
-		String flag = request.getParameter("flag");
-		Map map = courseService.add(academyId, flag);
+		String majorId = request.getParameter("majorId");
+		Map map = courseService.add(academyId, majorId);
 		ModelAndView mv = new ModelAndView();
-		if(map.get("flag")==null){
-			return map;
-		}else{
+		if(academyId == null && majorId == null){
 			mv.addObject("majorList", map.get("majorList"));
 			mv.addObject("academyList", map.get("academyList"));
 			mv.addObject("teacherList", map.get("teacherList"));
+			mv.addObject("classesList",map.get("classesList"));
 			mv.addObject("buildingList",  map.get("buildingList"));
 			mv.addObject("roomList",  map.get("roomList"));
 			mv.setViewName("forward:/WEB-INF/jsp/appendCourse.jsp");
 			return mv;
+		}else{
+			return map;
 		}
 	}
 
@@ -161,9 +173,10 @@ public class CourseAction extends BaseAction {
 
 	@RequestMapping("/getClassesCourse")
 	@ResponseBody
-	public ClassesCourseVO getClassesCourse(HttpServletResponse response, @RequestBody Params params) throws Exception {
+	public ClassesCourseVO getClassesCourse(HttpServletResponse response,HttpServletRequest request, @RequestBody Params params) throws Exception {
 		response.setCharacterEncoding("utf-8");
-		return courseService.getClassesCourse(params);
+		String classesId = request.getParameter("classId");
+		return courseService.getClassesCourse(params,classesId);
 	}
 
 	@RequestMapping(value = "/updateClassesCourse")
@@ -193,9 +206,12 @@ public class CourseAction extends BaseAction {
 		String teacherId = request.getParameter("teacherId");
 		String all_sectionArray = request.getParameter("all_sectionArray");
 		String single_sectionArray = request.getParameter("single_sectionArray");
-		
+		String classesId = request.getParameter("classesId");
 		response.setHeader("Access-Control-Allow-Origin", "*");
-		return courseService.insert(courseName, needHours, majorId, credit, type, startWeek, endWeek, text, teacherId, all_sectionArray, single_sectionArray, course);
+		int i = 0;
+		//插入课程基本信息、课程与班级的关联信息
+		Map map = courseService.insert(courseName, needHours, majorId, credit, type, startWeek, endWeek, text, teacherId, all_sectionArray, single_sectionArray, course,Integer.parseInt(classesId));
+		return map;
 	}
 
 	@RequestMapping(value = "/update")

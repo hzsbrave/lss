@@ -34,7 +34,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                     <!-- 
                     <img src="../images/2.jpg" alt="" />
                      -->
-                    <span>${loginUser.studentName }</span>
+                    <span>${loginUser_student.studentName }</span>
                     <span class="caret"></span>
                   </a>
                   <ul class="dropdown-menu pull-right extended" aria-labelledby="profile">
@@ -44,7 +44,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                     <li><a href="##"><i class="glyphicon glyphicon-cog"></i>Setting</a></li>
                     <li><a href="##"><i class="glyphicon glyphicon-tint"></i>Notification</a></li>
                      -->
-                    <li><a href="${proPath }/login/loginOut.action"><i class="glyphicon glyphicon-log-out"></i>退出</a></li>
+                    <li><a href="${proPath }/login/loginOut.action?flag=1"><i class="glyphicon glyphicon-log-out"></i>退出</a></li>
                   </ul>
                 </div>
             </div>
@@ -96,7 +96,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                    <ul class="list-group">
                                        <li class="list-group-item text-left">
                                             <span class="glyphicon glyphicon-user"></span>
-                                            ${loginUser.studentName }
+                                            ${loginUser_student.studentName }
                                        </li>
                                        <!-- 
                                        <li class="list-group-item">
@@ -109,13 +109,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                            <span class="pull-left">
                                                <strong>学号</strong>
                                            </span>
-                                           <span>${loginUser.studentNo }</span>
+                                           <span>${loginUser_student.studentNo }</span>
                                        </li>
                                        <li class="list-group-item clearfix text-right">
                                            <span class="pull-left">
                                                <strong>入学时间</strong>
                                            </span>
-                                           <span><fmt:formatDate value="${loginUser.enterDate}" pattern="yyyy年MM月dd日" /></span>
+                                           <span><fmt:formatDate value="${loginUser_student.enterDate}" pattern="yyyy年MM月dd日" /></span>
                                        </li>
                                    </ul>
                                </div>
@@ -124,29 +124,29 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                    <hr />
                                     <form role="form" method="post" action="${proPath }/student/updateStudent.action">
                                      <dl class="dl-horizontal-profile">
-                                     	<input type="hidden" name="id" id="id" value="${loginUser.id }"/>
-                                       <dt>姓名</dt><dd><input type="text" id="studentName" name="studentName" value="${loginUser.studentName }"/></dd>
+                                     	<input type="hidden" name="id" id="id" value="${loginUser_student.id }"/>
+                                       <dt>姓名</dt><dd><input type="text" id="studentName" name="studentName" value="${loginUser_student.studentName }"/></dd>
                                        <dt>性别</dt>
                                        <dd>
                                        		<select id="gender" name="gender">
-                                       			<option value="0" <c:if test="${loginUser.gender==0}">selected="selected"</c:if>>男</option>
-                                       			<option value="1" <c:if test="${loginUser.gender==1}">selected="selected"</c:if>>女</option>
+                                       			<option value="0" <c:if test="${loginUser_student.gender==0}">selected="selected"</c:if>>男</option>
+                                       			<option value="1" <c:if test="${loginUser_student.gender==1}">selected="selected"</c:if>>女</option>
                                        		</select>
                                        </dd>
-                                       <dt>籍贯</dt><dd><input type="text" id="natives" name="natives" value="${loginUser.natives }"/></dd>
-                                       <dt>民族</dt><dd><input type="text" id="national" name="national" value="${loginUser.national }"/></dd>
-                                       <dt>出生年月</dt><dd><input type="month" id="birthday" name="birthday" value='<fmt:formatDate value="${loginUser.birthday}" pattern="yyyy-MM" />'></dd>
+                                       <dt>籍贯</dt><dd><input type="text" id="natives" name="natives" value="${loginUser_student.natives }"/></dd>
+                                       <dt>民族</dt><dd><input type="text" id="national" name="national" value="${loginUser_student.national }"/></dd>
+                                       <dt>出生年月</dt><dd><input type="month" id="birthday" name="birthday" value='<fmt:formatDate value="${loginUser_student.birthday}" pattern="yyyy-MM" />'></dd>
                                        <!-- 
-                                       <fmt:formatDate value="${loginUser.birthday }" pattern="yyyy-MM" />
+                                       <fmt:formatDate value="${loginUser_student.birthday }" pattern="yyyy-MM" />
                                         -->
-                                       <dt>联系方式</dt><dd><input type="text" id="phone" name="phone" value="${loginUser.phone }"/></dd>
-                                       <dt>QQ</dt><dd><input type="text" id="qq" name="qq" value="${loginUser.qq }"/></dd>
-                                       <dt>邮箱</dt> <dd><input type="text" id="email" name="email" value="${loginUser.email }"/></dd>
-                                       <dt>家庭住址</dt><dd><input type="text" id="address" name="address" value="${loginUser.address }"/></dd>
-                                       <dt>身份证号</dt><dd><input type="text" id="idcard" name="idcard" value="${loginUser.idcard }"/></dd>
-                                       <dt>家庭联系方式</dt><dd><input type="text" id="familyPhone" name="familyPhone" value="${loginUser.familyPhone }"/></dd>
-                                       <dt>毕业中学</dt><dd><input type="text" id="middleSchool" name="middleSchool" value="${loginUser.middleSchool }"/></dd>
-                                       <dt>政治面貌</dt><dd><input type="text" id="political" name="political" value="${loginUser.political }"/></dd>
+                                       <dt>联系方式</dt><dd><input type="text" id="phone" name="phone" value="${loginUser_student.phone }"/></dd>
+                                       <dt>QQ</dt><dd><input type="text" id="qq" name="qq" value="${loginUser_student.qq }"/></dd>
+                                       <dt>邮箱</dt> <dd><input type="text" id="email" name="email" value="${loginUser_student.email }"/></dd>
+                                       <dt>家庭住址</dt><dd><input type="text" id="address" name="address" value="${loginUser_student.address }"/></dd>
+                                       <dt>身份证号</dt><dd><input type="text" id="idcard" name="idcard" value="${loginUser_student.idcard }"/></dd>
+                                       <dt>家庭联系方式</dt><dd><input type="text" id="familyPhone" name="familyPhone" value="${loginUser_student.familyPhone }"/></dd>
+                                       <dt>毕业中学</dt><dd><input type="text" id="middleSchool" name="middleSchool" value="${loginUser_student.middleSchool }"/></dd>
+                                       <dt>政治面貌</dt><dd><input type="text" id="political" name="political" value="${loginUser_student.political }"/></dd>
                                        <dt></dt><dd><button class="btn btn-info" type="submit">提交</button></dd>
                                      </dl>
                                    </form>

@@ -15,17 +15,19 @@ import cn.it.entity.vo.MyCourseVO;
 
 
 public interface CourseService extends BaseService<Course> {
-	public List<Major> selectMajorList(Major major);
+	public Map selectClassesList();
+	public Map selectMajorAndClassesList(Integer academyId);
+	public Map selectOnlyClassesList(Integer majorId);
 	public CourseVO get(Params params);
-	public Map add(String academyId,String flag);
+	public Map add(String academyId, String majorId);
 	public List<Room> onchangeBuilding(String buildingId);
 	public Map addClassCourse();
 	public Map addClassCourseChange(String major_id);
 	public Map addClassCourse2();
 	//public int insertClassesCourse(String classes,String course,String major,String teacher);
-	public ClassesCourseVO getClassesCourse(Params params);
+	public ClassesCourseVO getClassesCourse(Params params,String classesId);
 	public int updateClassesCourse(String id,String hours,String courseId,String classesId,String majorId,String teacherId);
-	public Map insert(String courseName,String needHours,String majorId,String credit,String type,String startWeek,String endWeek,String text,String teacherId,String all_sectionArray,String single_sectionArray,Course course);
+	public Map insert(String courseName,String needHours,String majorId,String credit,String type,String startWeek,String endWeek,String text,String teacherId,String all_sectionArray,String single_sectionArray,Course course,Integer classesId);
 	public int update(String id,String courseName,String needHours,String majorId,Course course);
 	public Map deleteTheList(String[] stuIds);
 	public int deleteClassesList(String[] stuIds) ;

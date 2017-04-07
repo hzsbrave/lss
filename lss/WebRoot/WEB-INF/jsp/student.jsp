@@ -77,9 +77,8 @@ thead>tr>th:nth-child(3), tbody>tr>td:nth-child(3) {
 					class="glyphicon glyphicon-plus"></span>
 			</a>
 				<ul class="sec-menu">
-					<li><a href="${proPath }/course/list.action"><i></i><span>基本课程设置</span></a></li>
-					<li><a href="${proPath }/course/classCourse.action"><i></i><span>班级课程信息</span></a></li>
-					<li><a href="${proPath }/course/addClassCourse.action"><i></i><span>班级课程设置</span></a></li>
+					<li><a href="${proPath }/course/add.action"><i></i><span>课程设置</span></a></li>
+					<li><a href="${proPath }/course/classCourse.action"><i></i><span>课程信息</span></a></li>
 				</ul></li>
 			<li><a href="javascript:void(0);"> <i
 					class="glyphicon glyphicon-pencil"></i> <span>成绩管理</span> <span
@@ -194,7 +193,7 @@ thead>tr>th:nth-child(3), tbody>tr>td:nth-child(3) {
 				<div class="modal-body">
 					<form class="form-horizontal" role="form">
 						<div class="form-group">
-							<label class="col-md-2 col-sm-2 control-label" for="acamedyId">所属学院：</label>
+							<label class="col-md-2 col-sm-2 control-label" for="acamedy">所属学院：</label>
 							<div class="col-sm-5">
 								<select class="form-control" id="acamedy" name="academyId"
 									onchange="acamedyOnChange(this)">
@@ -205,10 +204,9 @@ thead>tr>th:nth-child(3), tbody>tr>td:nth-child(3) {
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-md-2 col-sm-2 control-label" for="majorId">所属专业：</label>
+							<label class="col-md-2 col-sm-2 control-label" for="major">所属专业：</label>
 							<div class="col-sm-5">
 								<select class="form-control" id="major" name="majorId" onchange="majorOnChange(this)">
-									<option>请选择--</option>
 									<c:forEach items="${majorList }" var="major">
 										<option value="${major.id }">${major.majorName }</option>
 									</c:forEach>
@@ -216,10 +214,9 @@ thead>tr>th:nth-child(3), tbody>tr>td:nth-child(3) {
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-md-2 col-sm-2 control-label" for="classId">所属班级：</label>
+							<label class="col-md-2 col-sm-2 control-label" for="classes">所属班级：</label>
 							<div class="col-sm-5">
 								<select class="form-control" id="classes" name="classId">
-									<option>请选择--</option>
 									<c:forEach items="${classesList }" var="class">
 										<option value="${class.id }">${class.className }</option>
 									</c:forEach>
@@ -251,7 +248,7 @@ thead>tr>th:nth-child(3), tbody>tr>td:nth-child(3) {
 				<div class="modal-body">
 					<form class="form-horizontal" role="form">
 						<div class="form-group">
-							<label class="col-md-2 col-sm-2 control-label" for="acamedyId">请输入：</label>
+							<label class="col-md-2 col-sm-2 control-label" for="searchInput">请输入：</label>
 							<div class="col-sm-5">
 								<input id="searchInput" name="searchKey" />
 							</div>
@@ -305,8 +302,8 @@ thead>tr>th:nth-child(3), tbody>tr>td:nth-child(3) {
 			}
 			success = false;
 			var url = "&academyId=" + $(obj).val() + "&flag=1";
-			var appendOption = '<option>请选择--</option>';
-			var appendOption2 = '<option>请选择--</option>';
+			var appendOption = '';
+			var appendOption2 = '';
 			$
 					.ajax({
 						type : "POST",
@@ -343,15 +340,12 @@ thead>tr>th:nth-child(3), tbody>tr>td:nth-child(3) {
 		
 		var success2 = true;
 		function majorOnChange(obj) {
-			if( $(obj).val() == '请选择--'){
-				return;
-			}
 			if (success2 == false) {
 				return;
 			}
 			success2 = false;
 			var url = "&majorId=" + $(obj).val();
-			var appendOption3 = '<option>请选择--</option>';
+			var appendOption3 = '';
 			$.ajax({
 						type : "POST",
 						url : $('#hidden').val() + "/student/majorOnChange.action",
@@ -382,13 +376,13 @@ thead>tr>th:nth-child(3), tbody>tr>td:nth-child(3) {
 					var acamedy = $('#acamedy').val();
 					var major = $('#major').val();
 					var classes = $('#classes').val();
-					if (acamedy == '请选择--') {
+					if (acamedy == null) {
 						acamedy = undefined;
 					}
-					if (major == '请选择--') {
+					if (major == null) {
 						major = undefined;
 					}
-					if (classes == '请选择--') {
+					if (classes == null) {
 						classes = undefined;
 					}
 					$table.bootstrapTable('refresh', {

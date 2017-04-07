@@ -77,9 +77,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                             <span class="glyphicon glyphicon-plus"></span>
                         </a>
                         <ul class="sec-menu" style="display:block;">
-                        	<li><a href="${proPath }/course/list.action"><i></i><span>基本课程设置</span></a></li>
-                            <li><a href="${proPath }/course/classCourse.action" style="color:#FF6C60;"><i></i><span>班级课程信息</span></a></li>
-                            <li><a href="${proPath }/course/addClassCourse.action"><i></i><span>班级课程设置</span></a></li>
+                            <li><a href="${proPath }/course/add.action" ><i></i><span>课程设置</span></a></li>
+                            <li><a href="${proPath }/course/classCourse.action" style="color:#FF6C60;"><i></i><span>课程信息</span></a></li>
                         </ul>
                     </li>
                     <li>
@@ -145,9 +144,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             	<div class="container">
             	<input id="hidden" value="${lssPath}" hidden/>
                     <div id="toolbar" class="btn-group">
-                        <a href="${proPath }/course/addClassCourse.action" class="btn btn-default" id="addStu">
+                      <%--  <a href="${proPath }/course/addClassCourse.action" class="btn btn-default" id="addStu">
                             <i class="glyphicon glyphicon-plus"></i>
-                        </a>
+                        </a>--%>
                         <button type="button" class="btn btn-default" id="trash">
                             <i class="glyphicon glyphicon-trash"></i>
                         </button>
@@ -195,6 +194,62 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 </div><!-- /.modal -->
  <div class="modal-backdrop fade in"></div>
 <!--模态对话框-->
+
+    <!-- Modal for initSelectClassCourse-->
+    <div class="modal fade" id="selectModel" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">请筛选：</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-2 control-label">所属学院：</label>
+                            <div class="col-sm-5">
+                                <select class="form-control" id="acamedy" name="academyId" onchange="onchange_1(this.value)">
+                                    <c:forEach items="${academyList }" var="academy">
+                                        <option value="${academy.id }">${academy.academyName }</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-2 control-label">所属专业：</label>
+                            <div class="col-sm-5">
+                                <select class="form-control" id="major" name="majorId" onchange="onchange_2(this.value)">
+                                    <c:forEach items="${majorList }" var="major">
+                                        <option value="${major.id }">${major.majorName }</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-2 control-label">所属班级：</label>
+                            <div class="col-sm-5">
+                                <select class="form-control" id="classes" name="classesId">
+                                    <c:forEach items="${classesList }" var="classes">
+                                        <option value="${classes.id }">${classes.className }</option>
+                                    </c:forEach>
+                                    <option value="0">(选修)无班级</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">放弃筛选</button>
+                    <button type="button" class="btn btn-primary" id="mysubmit">筛选</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 	<script src="<%=basePath %>common/js/jquery-1.11.1.min.js"></script>
     <script src="<%=basePath %>common/js/bootstrap.min.js"></script>
     <script src="<%=basePath %>common/js/bootstrap-table.js"></script>
@@ -221,38 +276,83 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			console.log(ids);
 		});
 	  });
-	  
-	  function changeMajor(id){
-		  //alert(id);
-		  var url = "&major_id="+id;
-			$.ajax({
-				type:"POST",
-				url:$('#hidden').val()+"/course/addClassCourseChange.action",
-				dataType:"json",
-				data:url,
-				success: function(data){
-					
-					$("#courseId").empty();
-					var appendOption = "";
-	            	var courseList = data.courseList;
-	            	for(var j=0;j<courseList.length;j++){
-	            		appendOption += '<option value='+courseList[j].id+'>'+courseList[j].courseName+'</option>';
-					}
-	            	$("#courseId").append(appendOption);
-	            	
-	            	$("#classesId").empty();
-					var appendOption2 = "";
-	            	var classesList = data.classesList;
-	            	for(var l=0;l<classesList.length;l++){
-	            		appendOption2 += '<option value='+classesList[l].id+'>'+classesList[l].className+'</option>';
-					}
-	            	$("#classesId").append(appendOption2);
-				},
-				error:function(){
-					alert("获取失败");
-				}
-			});	
-	  }
+
+      $('#mysubmit').click(function(){
+          var class_id = $('#classes').val();
+          $table.bootstrapTable('refresh', {
+              url : $('#hidden').val()
+              + '/course/getClassesCourse.action?classId=' + class_id
+          });
+          $("#selectModel").modal('hide');//手动隐藏模态框
+      });
+
+        function onchange_1(id){
+            var url = "&academyId="+id;
+            $.ajax({
+                type:"POST",
+                url:$('#hidden').val()+"/course/classCourse.action",
+                dataType:"json",
+                data:url,
+                success: function(data){
+                   // alert(JSON.stringify(data));
+                    if(data.majorList != undefined && data.majorList.length>0){
+                        $("#major").empty();
+                        var appendOption = "";
+                        var majorList = data.majorList;
+                        for(var j=0;j<majorList.length;j++){
+                            appendOption += '<option value='+majorList[j].id+'>'+majorList[j].majorName+'</option>';
+                        }
+                        $("#major").append(appendOption);
+
+                        if(data.classesList != undefined && data.classesList.length>0){
+                            $("#classes").empty();
+                            var appendOption2 = "";
+                            var classesList = data.classesList;
+                            for(var j=0;j<classesList.length;j++){
+                                appendOption2 += '<option value='+classesList[j].id+'>'+classesList[j].className+'</option>';
+                            }
+                            $("#classes").append(appendOption2);
+                        }else{
+                            $("#classes").empty();
+                        }
+                    }else{
+                        $("#major").empty();
+                        $("#classes").empty();
+                    }
+                },
+                error:function(){
+                    alert("获取失败");
+                }
+            });
+        }
+
+        function onchange_2(id){
+            var url = "&majorId="+id;
+            $.ajax({
+                type:"POST",
+                url:$('#hidden').val()+"/course/classCourse.action",
+                dataType:"json",
+                data:url,
+                success: function(data){
+                    // alert(JSON.stringify(data));
+                    if(data.classesList != undefined && data.classesList.length>0){
+                        $("#classes").empty();
+                        var appendOption = "";
+                        var classesList = data.classesList;
+                        for(var j=0;j<classesList.length;j++){
+                            appendOption += '<option value='+classesList[j].id+'>'+classesList[j].className+'</option>';
+                        }
+                        appendOption += '<option value="0">(选修)无班级</option>';
+                        $("#classes").append(appendOption);
+                    }else{
+                        $("#classes").empty();
+                    }
+                },
+                error:function(){
+                    alert("获取失败");
+                }
+            });
+        }
     </script>
   </body>
 </html>

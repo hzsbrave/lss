@@ -97,6 +97,12 @@
 				});*/
 			}
 	};
+
+	$('#selectModel').modal({
+		show:true,
+		backdrop:true
+	})//手动显示模态框
+
 	 var $container = $('.container'),
         $table = $('#table'),
         $small = $('#small'),
@@ -143,7 +149,7 @@
            url:$('#hidden').val()+"/course/getClassesCourse.action",//数据源/graduationProject/data/data1.json
            showColumns:true,//True to show the columns drop down list.
            search:false,// 不显示搜索框
-           showRefresh:true,//显示刷新按钮
+           showRefresh:false,//显示刷新按钮
            showToggle:true,//显示切换表格显示形式的按钮
            pagination:true,//在表格底部生成分页组件
            height:$(window).height() - 250,//定义表格的高度。

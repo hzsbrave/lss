@@ -79,9 +79,8 @@ select>option:hover {
 					class="glyphicon glyphicon-plus"></span>
 			</a>
 				<ul class="sec-menu">
-					<li><a href="${proPath }/course/list.action"><i></i><span>基本课程设置</span></a></li>
-					<li><a href="${proPath }/course/classCourse.action"><i></i><span>班级课程信息</span></a></li>
-					<li><a href="${proPath }/course/addClassCourse.action"><i></i><span>班级课程设置</span></a></li>
+					<li><a href="${proPath }/course/add.action"><i></i><span>课程设置</span></a></li>
+					<li><a href="${proPath }/course/classCourse.action"><i></i><span>课程信息</span></a></li>
 				</ul></li>
 			<li><a href="javascript:void(0);"> <i
 					class="glyphicon glyphicon-pencil"></i> <span>成绩管理</span> <span
@@ -236,7 +235,7 @@ select>option:hover {
 						aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					<h4 class="modal-title" id="myModalLabel">根据关键字筛选教师信息（学院名、教师名、教师号）：</h4>
+					<h4 class="modal-title" id="myModalLabel2">根据关键字筛选教师信息（学院名、教师名、教师号）：</h4>
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal" role="form">

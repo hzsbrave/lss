@@ -28,13 +28,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             <div class="collapse navbar-collapse">
                 <div class="dropdown">
                   <a class="dropdown-toggle user-info" type="button" id="profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    <span>${loginUser.teacherName }</span>
+                    <span>${loginUser_teacher.teacherName }</span>
                     <span class="caret"></span>
                   </a>
                   <ul class="dropdown-menu pull-right extended" aria-labelledby="profile">
                     <div class="log-arrow-up"></div>
                     <li><a href="${proPath }/teacher/teacherEdit.action"><i class="glyphicon glyphicon-log-out"></i>设置</a></li>
-                    <li><a href="${proPath }/login/loginOut.action"><i class="glyphicon glyphicon-log-out"></i>退出</a></li>
+                    <li><a href="${proPath }/login/loginOut.action?flag=2"><i class="glyphicon glyphicon-log-out"></i>退出</a></li>
                   </ul>
                 </div>
             </div>
@@ -79,7 +79,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                         </a>
                     </li>
                      <li>
-                         <a href="${proPath }/teacher/analysis.action?teacher_id=${loginUser.id}">
+                         <a href="${proPath }/teacher/analysis.action?teacher_id=${loginUser_teacher.id}">
                             <i class="glyphicon glyphicon-pencil"></i>
                             <span>教学质量评价</span>
                         </a>
@@ -98,7 +98,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                    <ul class="list-group">
                                        <li class="list-group-item text-left">
                                             <span class="glyphicon glyphicon-user"></span>
-                                           ${loginUser.teacherName } 
+                                           ${loginUser_teacher.teacherName }
                                        </li>
                                        <!-- 
                                        <li class="list-group-item">
@@ -111,13 +111,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                            <span class="pull-left">
                                                <strong>职工号</strong>
                                            </span>
-                                           <span>${loginUser.teacheNo }</span>
+                                           <span>${loginUser_teacher.teacheNo }</span>
                                        </li>
                                        <li class="list-group-item clearfix text-right">
                                            <span class="pull-left">
                                                <strong>入职时间</strong>
                                            </span>
-                                           <span><fmt:formatDate value="${loginUser.enterDate}" pattern="yyyy年MM月dd日" /></span>
+                                           <span><fmt:formatDate value="${loginUser_teacher.enterDate}" pattern="yyyy年MM月dd日" /></span>
                                        </li>
                                       
                                    </ul>
@@ -126,25 +126,25 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                    <h2>个人信息</h2>
                                    <hr />
                                    <dl class="dl-horizontal-profile">
-                                     <dt>姓名</dt><dd>${loginUser.teacherName }</dd>
+                                     <dt>姓名</dt><dd>${loginUser_teacher.teacherName }</dd>
                                      <dt>性别</dt><dd>
-                                     <c:if test="${loginUser.gender ==0}">男</c:if>
-                                     <c:if test="${loginUser.gender ==1}">女</c:if>
+                                     <c:if test="${loginUser_teacher.gender ==0}">男</c:if>
+                                     <c:if test="${loginUser_teacher.gender ==1}">女</c:if>
                                      </dd>
-                                     <dt>籍贯</dt><dd>${loginUser.natives }</dd>
-                                     <dt>民族</dt><dd>${loginUser.national }</dd>
-                                     <dt>出生年月</dt><dd><fmt:formatDate value="${loginUser.birthday }" pattern="yyyy年MM月" /></dd>
-                                     <dt>联系方式</dt><dd>${loginUser.phone }</dd>
-                                     <dt>家庭住址</dt><dd>${loginUser.familyAddress }</dd>
-                                     <dt>现住址</dt><dd>${loginUser.nowAddress }</dd>
-                                     <dt>身份证号</dt><dd>${loginUser.idcard }</dd>
-                                     <dt>政治面貌</dt><dd>${loginUser.political }</dd>
+                                     <dt>籍贯</dt><dd>${loginUser_teacher.natives }</dd>
+                                     <dt>民族</dt><dd>${loginUser_teacher.national }</dd>
+                                     <dt>出生年月</dt><dd><fmt:formatDate value="${loginUser_teacher.birthday }" pattern="yyyy年MM月" /></dd>
+                                     <dt>联系方式</dt><dd>${loginUser_teacher.phone }</dd>
+                                     <dt>家庭住址</dt><dd>${loginUser_teacher.familyAddress }</dd>
+                                     <dt>现住址</dt><dd>${loginUser_teacher.nowAddress }</dd>
+                                     <dt>身份证号</dt><dd>${loginUser_teacher.idcard }</dd>
+                                     <dt>政治面貌</dt><dd>${loginUser_teacher.political }</dd>
                                      <dt>学历</dt>
                                      <dd>
-                                     	<c:if test="${loginUser.xueliId==0 }">本科</c:if>
-                                     	<c:if test="${loginUser.xueliId==1 }">硕士</c:if>
-                                     	<c:if test="${loginUser.xueliId==2 }">教授</c:if>
-                                     	<c:if test="${loginUser.xueliId==3 }">博士</c:if>
+                                     	<c:if test="${loginUser_teacher.xueliId==0 }">本科</c:if>
+                                     	<c:if test="${loginUser_teacher.xueliId==1 }">硕士</c:if>
+                                     	<c:if test="${loginUser_teacher.xueliId==2 }">教授</c:if>
+                                     	<c:if test="${loginUser_teacher.xueliId==3 }">博士</c:if>
                                      </dd>
                                    </dl>
                                </div>

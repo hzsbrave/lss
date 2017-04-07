@@ -1,15 +1,20 @@
 package cn.it.service.impl;
 
-import java.util.List;
+import java.util.*;
 
+import cn.it.dao.CourseDetailMapper;
+import cn.it.entity.*;
+import cn.it.entity.model.CoursePO;
+import cn.it.entity.model.TeacherPO;
+import cn.it.entity.vo.CourseDetailVO;
+import cn.it.push.PushAPI;
+import cn.it.push.models.TokenReslut;
+import cn.it.push.util.GsonUtil;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.it.dao.CourseRelationMapper;
-import cn.it.entity.Course;
-import cn.it.entity.Evaluate;
-import cn.it.entity.Student;
 import cn.it.entity.vo.EvaluateVO;
 import cn.it.entity.vo.StudentSolrVO;
 import cn.it.service.StudentService;
@@ -22,6 +27,8 @@ public class StudentServiceImpl extends BaseServiceImpl<Student> implements Stud
 	private StudentDao studentDao;
 	@Autowired
 	private CourseRelationMapper courseRelationMapper;
+	@Autowired
+	private CourseDetailMapper courseDetailMapper;
 	@Override
 	public Student selectStudent(Student student) {
 		return studentMapper.selectStudent(student);
@@ -46,9 +53,53 @@ public class StudentServiceImpl extends BaseServiceImpl<Student> implements Stud
 	}
 
 	@Override
-	public long addStudentList(List<Student> studentList) {
+	public Map insertStudentList(List<Student> studentList) {
 		// TODO Auto-generated method stub
-		return studentMapper.addStudentList(studentList);
+		for(int q=0;q<studentList.size();q++){
+			studentMapper.insert(studentList.get(q));
+			int id = studentList.get(q).getId();
+
+			// 融云token---接口
+			PushAPI apiPush=new PushAPI();
+			String tokenStr = null;
+			try {
+				tokenStr = apiPush.getTokenByUserid(id+"", studentList.get(q).getStudentName(), "");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			TokenReslut userGetTokenResult=(TokenReslut) GsonUtil.fromJson(tokenStr, TokenReslut.class);
+			String tokens = userGetTokenResult.getToken();
+			Student s = new Student();
+			s.setId(id);
+			s.setToken(tokens);
+			int k = studentMapper.updateExam(s);
+			//给该新增学生增加课程信息(班级已设置的必修课)
+			//查询该学生所属班级下绑定的所有课程
+			List<CourseRelation> crList = new ArrayList<CourseRelation>();
+			CoursePO coursePO = new CoursePO();
+			coursePO.setClassesId(studentList.get(q).getClassId());
+			List<Course> courseList = courseMapper.selectCourse(coursePO);
+			if(courseList!=null&&courseList.size()>0){
+				for(int l=0;l<courseList.size();l++){
+					List<CourseDetail> cdList = courseDetailMapper.selectByCourseId(courseList.get(l).getId());
+					if(cdList!=null&&cdList.size()>0){
+						for(int t=0;t<cdList.size();t++){
+							Date date = new Date();
+							CourseRelation cr = new CourseRelation();
+							cr.setStudentId(id);
+							cr.setCourseDetailId(cdList.get(t).getTcdId());
+							cr.setCreateTime(date);
+							cr.setLastUpdateTime(date);
+							crList.add(cr);
+						}
+					}
+				}
+			}
+			if(crList.size()>0) {
+				courseRelationMapper.addCourseRelationList(crList);
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -116,15 +167,69 @@ public class StudentServiceImpl extends BaseServiceImpl<Student> implements Stud
 	}
 
 	@Override
-	public List<Student> selectStudentByTeacherId(Integer teacher_id) {
+	public List<Student> selectStudentByTeacherId(TeacherPO teacherPO) {
 		// TODO Auto-generated method stub
-		return courseRelationMapper.selectStudentByTeacherId(teacher_id);
+		return courseRelationMapper.selectStudentByTeacherId(teacherPO);
 	}
 
 	@Override
-	public List<Course> selectCourseByTeacherId(Integer teacher_id) {
+	public List<CourseDetailVO> selectCourseByTeacherId(Integer teacher_id) {
 		// TODO Auto-generated method stub
 		return courseRelationMapper.selectCourseByTeacherId(teacher_id);
+	}
+
+	@Override
+	public Map insertStudentInfo(Student student) throws Exception {
+		String is_exist = null;
+		int id = 0;
+		Student stu = studentMapper.selectStudentByNo(student.getStudentNo());
+		if(stu==null){
+			student.setPassword(student.getStudentNo());
+			int i=studentMapper.insert(student);
+			id = student.getId();
+			// 融云token---接口
+			PushAPI apiPush=new PushAPI();
+			String tokenStr=apiPush.getTokenByUserid(id+"", student.getStudentName(), "");
+			TokenReslut userGetTokenResult=(TokenReslut) GsonUtil.fromJson(tokenStr, TokenReslut.class);
+			String tokens = userGetTokenResult.getToken();
+			Student s = new Student();
+			s.setId(id);
+			s.setToken(tokens);
+			int k = studentMapper.updateExam(s);
+			if(k==1){
+				is_exist = "0";//插入成功
+			}
+			//给该新增学生增加课程信息(班级已设置的必修课)
+			//查询该学生所属班级下绑定的所有课程
+			List<CourseRelation> crList = new ArrayList<CourseRelation>();
+			CoursePO coursePO = new CoursePO();
+			coursePO.setClassesId(student.getClassId());
+			List<Course> courseList = courseMapper.selectCourse(coursePO);
+			if(courseList!=null&&courseList.size()>0){
+				for(int l=0;l<courseList.size();l++){
+					List<CourseDetail> cdList = courseDetailMapper.selectByCourseId(courseList.get(l).getId());
+					if(cdList!=null&&cdList.size()>0){
+						for(int t=0;t<cdList.size();t++){
+							Date date = new Date();
+							CourseRelation cr = new CourseRelation();
+							cr.setStudentId(id);
+							cr.setCourseDetailId(cdList.get(t).getTcdId());
+							cr.setCreateTime(date);
+							cr.setLastUpdateTime(date);
+							crList.add(cr);
+						}
+					}
+				}
+			}
+			if(crList.size()>0){
+				courseRelationMapper.addCourseRelationList(crList);
+			}
+		}else{
+			is_exist = "1";//账户已存在
+		}
+		Map map = new HashMap();
+		map.put("isExist", is_exist);
+		return map;
 	}
 
 }

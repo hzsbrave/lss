@@ -1,6 +1,6 @@
 package cn.it.dao;
 
-import cn.it.entity.Course;
+
 import cn.it.entity.CourseRelation;
 import cn.it.entity.CourseRelationExample;
 import cn.it.entity.Student;
